@@ -87,6 +87,7 @@ nonterminal ActualPars ActualPars;
 nonterminal ActualParamList ActualParamList;
 
 nonterminal DesignatorStatement DesignatorStatement;
+nonterminal Access Access;
 nonterminal TermList TermList;
 nonterminal FactorList FactorList;
 
@@ -177,8 +178,13 @@ Factor ::= (DesignatorFactor) Designator:D1 {: RESULT=new DesignatorFactor(D1); 
 			|
 			(FuncCallFactor) Designator:func LPAREN ActualPars:A1 RPAREN {: RESULT=new FuncCallFactor(func, A1); RESULT.setLine(funcleft); :}
 			|
-			(ConstFactor) NUMBER:N1 {: RESULT=new ConstFactor(N1); RESULT.setLine(N1left); :}
-;
+			(NumFactor) NUMBER:N1 {: RESULT=new NumFactor(N1); RESULT.setLine(N1left); :}
+			|
+			(CharFactor) CHAR:C1 {: RESULT=new CharFactor(C1); RESULT.setLine(C1left); :}
+			/*|
+			(BoolFactor) BOOLCONST
+			*/
+			;
 		
 ActualPars ::= (Actuals) ActualParamList:A1 {: RESULT=new Actuals(A1); RESULT.setLine(A1left); :}
 			|
@@ -190,7 +196,15 @@ ActualParamList ::= (ActualParams) ActualParamList:A1 COMMA Expr:E2 {: RESULT=ne
 				(ActualParam) Expr:E1 {: RESULT=new ActualParam(E1); RESULT.setLine(E1left); :}
 				;
 				
-Designator ::= (Designator) IDENT:name {: RESULT=new Designator(name); RESULT.setLine(nameleft); :};
+Designator ::= (NamedDesignator) IDENT:name {: RESULT=new NamedDesignator(name); RESULT.setLine(nameleft); :}
+				|
+				(AccessDesignator) Access:A1 {: RESULT=new AccessDesignator(A1); RESULT.setLine(A1left); :}
+;
+
+Access ::= (AccessField) IDENT:varName DOT IDENT:field {: RESULT=new AccessField(varName, field); RESULT.setLine(varNameleft); :}
+			|
+			(AccessArray) IDENT:arrayName LBRACKET Expr:E1 RBRACKET {: RESULT=new AccessArray(arrayName, E1); RESULT.setLine(arrayNameleft); :}
+			;
 
 Addop ::= (AddopPlus) PLUS {: RESULT=new AddopPlus(); :} | (AddopMinus) MINUS {: RESULT=new AddopMinus(); :};
 Mulop ::= (MulopMul) MUL {: RESULT=new MulopMul(); :} | (MulopDiv) DIV {: RESULT=new MulopDiv(); :} | (MulopMod) MOD {: RESULT=new MulopMod(); :};

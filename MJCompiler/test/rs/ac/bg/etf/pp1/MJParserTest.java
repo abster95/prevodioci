@@ -45,21 +45,21 @@ public class MJParserTest {
 			log.info("===================================");
 
 			// ispis prepoznatih programskih konstrukcija
-			SemanticPass v = new SemanticPass();
-			prog.traverseBottomUp(v); 
-	      
-			log.info(" Print count calls = " + v.printCallCount);
-
-			log.info(" Deklarisanih promenljivih ima = " + v.varDeclCount);
-			
-			log.info("===================================");
-			Tab.dump();
-			
-			if(!p.errorDetected && v.passed()){
-				log.info("Parsiranje uspesno zavrseno!");
-			}else{
-				log.error("Parsiranje NIJE uspesno zavrseno!");
-			}
+//			SemanticPass v = new SemanticPass();
+//			prog.traverseBottomUp(v); 
+//	      
+//			log.info(" Print count calls = " + v.printCallCount);
+//
+//			log.info(" Deklarisanih promenljivih ima = " + v.varDeclCount);
+//			
+//			log.info("===================================");
+//			Tab.dump();
+//			
+//			if(!p.errorDetected && v.passed()){
+//				log.info("Parsiranje uspesno zavrseno!");
+//			}else{
+//				log.error("Parsiranje NIJE uspesno zavrseno!");
+//			}
 		} 
 		finally {
 			if (br != null) try { br.close(); } catch (IOException e1) { log.error(e1.getMessage(), e1); }

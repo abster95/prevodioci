@@ -77,7 +77,7 @@ nonterminal VarDeclList, MethodDeclList, VarDecl;
 nonterminal FormPars, StatementList, FormalParamList, FormalParamDecl, Statement;
 nonterminal Addop, Mulop, ActualPars, ActualParamList;
 
-nonterminal DesignatorStatement, TermList, FactorList;
+nonterminal DesignatorStatement, Access, TermList, FactorList;
 
 
 nonterminal rs.etf.pp1.symboltable.concepts.Obj ProgName, Program, MethodDecl, MethodTypeName, Designator;
@@ -166,8 +166,13 @@ Factor ::= (DesignatorFactor) Designator
 			|
 			(FuncCallFactor) Designator:func LPAREN ActualPars RPAREN
 			|
-			(ConstFactor) NUMBER
-;
+			(NumFactor) NUMBER
+			|
+			(CharFactor) CHAR
+			/*|
+			(BoolFactor) BOOLCONST
+			*/
+			;
 		
 ActualPars ::= (Actuals) ActualParamList
 			|
@@ -179,7 +184,15 @@ ActualParamList ::= (ActualParams) ActualParamList COMMA Expr
 				(ActualParam) Expr
 				;
 				
-Designator ::= (Designator) IDENT:name;
+Designator ::= (NamedDesignator) IDENT:name
+				|
+				(AccessDesignator) Access
+;
+
+Access ::= (AccessField) IDENT:varName DOT IDENT:field
+			|
+			(AccessArray) IDENT:arrayName LBRACKET Expr RBRACKET
+			;
 
 Addop ::= (AddopPlus) PLUS | (AddopMinus) MINUS;
 Mulop ::= (MulopMul) MUL | (MulopDiv) DIV | (MulopMod) MOD;

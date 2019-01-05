@@ -1,12 +1,13 @@
 // generated with ast extension for cup
 // version 0.8
-// 5/0/2019 16:18:46
+// 5/0/2019 17:18:4
 
 
 package rs.ac.bg.etf.pp1.ast;
 
 public abstract class VisitorAdaptor implements Visitor { 
 
+    public void visit(Designator Designator) { }
     public void visit(Factor Factor) { }
     public void visit(Mulop Mulop) { }
     public void visit(DesignatorStatement DesignatorStatement) { }
@@ -16,6 +17,7 @@ public abstract class VisitorAdaptor implements Visitor {
     public void visit(FormalParamList FormalParamList) { }
     public void visit(FormPars FormPars) { }
     public void visit(VarDeclList VarDeclList) { }
+    public void visit(Access Access) { }
     public void visit(Addop Addop) { }
     public void visit(FormalParamDecl FormalParamDecl) { }
     public void visit(MethodDeclList MethodDeclList) { }
@@ -28,12 +30,16 @@ public abstract class VisitorAdaptor implements Visitor {
     public void visit(MulopMul MulopMul) { visit(); }
     public void visit(AddopMinus AddopMinus) { visit(); }
     public void visit(AddopPlus AddopPlus) { visit(); }
-    public void visit(Designator Designator) { visit(); }
+    public void visit(AccessArray AccessArray) { visit(); }
+    public void visit(AccessField AccessField) { visit(); }
+    public void visit(AccessDesignator AccessDesignator) { visit(); }
+    public void visit(NamedDesignator NamedDesignator) { visit(); }
     public void visit(ActualParam ActualParam) { visit(); }
     public void visit(ActualParams ActualParams) { visit(); }
     public void visit(NoActuals NoActuals) { visit(); }
     public void visit(Actuals Actuals) { visit(); }
-    public void visit(ConstFactor ConstFactor) { visit(); }
+    public void visit(CharFactor CharFactor) { visit(); }
+    public void visit(NumFactor NumFactor) { visit(); }
     public void visit(FuncCallFactor FuncCallFactor) { visit(); }
     public void visit(DesignatorFactor DesignatorFactor) { visit(); }
     public void visit(NegatedFactor NegatedFactor) { visit(); }
