@@ -142,7 +142,12 @@ Statement ::= (DesignatorStmt) DesignatorStatement:D1 SEMI {: RESULT=new Designa
 		   (ProcCall) Designator:func LPAREN ActualPars:A1 RPAREN SEMI {: RESULT=new ProcCall(func, A1); RESULT.setLine(funcleft); :}
 		   ;
 		   
-DesignatorStatement ::= (Assignment) Designator:dest EQUAL Expr:e {: RESULT=new Assignment(dest, e); RESULT.setLine(destleft); :} ; 
+DesignatorStatement ::= (Assignment) Designator:dest EQUAL Expr:e {: RESULT=new Assignment(dest, e); RESULT.setLine(destleft); :} 
+						|
+						(Increment) Designator:variable INC {: RESULT=new Increment(variable); RESULT.setLine(variableleft); :}
+						|
+						(Decrement) Designator:variable DEC {: RESULT=new Decrement(variable); RESULT.setLine(variableleft); :}
+						; 
 
 			
 Expr ::= (AddExpr) Expr:te Addop:A1 Term:t {: RESULT=new AddExpr(te, A1, t); RESULT.setLine(teleft); :}

@@ -134,7 +134,12 @@ Statement ::= (DesignatorStmt) DesignatorStatement SEMI
 		   (ProcCall) Designator:func LPAREN ActualPars RPAREN SEMI
 		   ;
 		   
-DesignatorStatement ::= (Assignment) Designator:dest EQUAL Expr:e ; 
+DesignatorStatement ::= (Assignment) Designator:dest EQUAL Expr:e 
+						|
+						(Increment) Designator:variable INC
+						|
+						(Decrement) Designator:variable DEC
+						; 
 
 			
 Expr ::= (AddExpr) Expr:te Addop Term:t
