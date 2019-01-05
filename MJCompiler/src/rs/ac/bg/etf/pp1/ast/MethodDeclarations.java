@@ -1,9 +1,9 @@
 // generated with ast extension for cup
 // version 0.8
-// 5/0/2019 16:8:49
+// 5/0/2019 16:12:1
 
 
-package src.rs.ac.bg.etf.pp1.ast;
+package rs.ac.bg.etf.pp1.ast;
 
 public class MethodDeclarations extends MethodDeclList {
 

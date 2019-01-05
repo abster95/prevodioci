@@ -85,6 +85,8 @@ nonterminal Addop Addop;
 nonterminal ActualPars ActualPars;
 nonterminal ActualParamList ActualParamList;
 
+nonterminal DesignatorStatement DesignatorStatement;
+
 
 nonterminal rs.etf.pp1.symboltable.concepts.Obj ProgName, Program, MethodDecl, MethodTypeName, Designator;
 nonterminal rs.etf.pp1.symboltable.concepts.Struct Type, Term, Factor, Expr;
@@ -126,7 +128,7 @@ StatementList ::= (Statements) StatementList:S1 Statement:S2 {: RESULT=new State
 				(NoStmt) {: RESULT=new NoStmt(); :} /* epsilon */
 				;
 				
-Statement ::= (Assignment) Designator:dest EQUAL Expr:e SEMI {: RESULT=new Assignment(dest, e); RESULT.setLine(destleft); :}
+Statement ::= (DesignatorStmt) DesignatorStatement:D1 SEMI {: RESULT=new DesignatorStmt(D1); RESULT.setLine(D1left); :}
 		   |
 		   (ErrorStmt) error SEMI:l
 		   {: parser.report_error("Izvrsen oporavak do ; u liniji " + lleft, null);  :} {: RESULT=new ErrorStmt(); :}
@@ -138,7 +140,9 @@ Statement ::= (Assignment) Designator:dest EQUAL Expr:e SEMI {: RESULT=new Assig
 		   (ReturnNoExpr) RETURN SEMI {: RESULT=new ReturnNoExpr(); :}
 		   |
 		   (ProcCall) Designator:func LPAREN ActualPars:A1 RPAREN SEMI {: RESULT=new ProcCall(func, A1); RESULT.setLine(funcleft); :}
-		   ; 
+		   ;
+		   
+DesignatorStatement ::= (Assignment) Designator:dest EQUAL Expr:e {: RESULT=new Assignment(dest, e); RESULT.setLine(destleft); :} ; 
 
 			
 Expr ::= (AddExpr) Expr:te Addop:A1 Term:t {: RESULT=new AddExpr(te, A1, t); RESULT.setLine(teleft); :}

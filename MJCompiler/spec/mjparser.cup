@@ -77,6 +77,8 @@ nonterminal VarDeclList, MethodDeclList, VarDecl;
 nonterminal FormPars, StatementList, FormalParamList, FormalParamDecl, Statement;
 nonterminal Addop, ActualPars, ActualParamList;
 
+nonterminal DesignatorStatement;
+
 
 nonterminal rs.etf.pp1.symboltable.concepts.Obj ProgName, Program, MethodDecl, MethodTypeName, Designator;
 nonterminal rs.etf.pp1.symboltable.concepts.Struct Type, Term, Factor, Expr;
@@ -118,7 +120,7 @@ StatementList ::= (Statements) StatementList Statement
 				(NoStmt) /* epsilon */
 				;
 				
-Statement ::= (Assignment) Designator:dest EQUAL Expr:e SEMI
+Statement ::= (DesignatorStmt) DesignatorStatement SEMI
 		   |
 		   (ErrorStmt) error SEMI:l
 		   {: parser.report_error("Izvrsen oporavak do ; u liniji " + lleft, null);  :}
@@ -130,7 +132,9 @@ Statement ::= (Assignment) Designator:dest EQUAL Expr:e SEMI
 		   (ReturnNoExpr) RETURN SEMI
 		   |
 		   (ProcCall) Designator:func LPAREN ActualPars RPAREN SEMI
-		   ; 
+		   ;
+		   
+DesignatorStatement ::= (Assignment) Designator:dest EQUAL Expr:e ; 
 
 			
 Expr ::= (AddExpr) Expr:te Addop Term:t

@@ -1,13 +1,14 @@
 // generated with ast extension for cup
 // version 0.8
-// 5/0/2019 16:8:50
+// 5/0/2019 16:12:1
 
 
-package src.rs.ac.bg.etf.pp1.ast;
+package rs.ac.bg.etf.pp1.ast;
 
 public interface Visitor { 
 
     public void visit(Factor Factor);
+    public void visit(DesignatorStatement DesignatorStatement);
     public void visit(ActualParamList ActualParamList);
     public void visit(Expr Expr);
     public void visit(FormalParamList FormalParamList);
@@ -30,12 +31,13 @@ public interface Visitor {
     public void visit(Term Term);
     public void visit(TermExpr TermExpr);
     public void visit(AddExpr AddExpr);
+    public void visit(Assignment Assignment);
     public void visit(ProcCall ProcCall);
     public void visit(ReturnNoExpr ReturnNoExpr);
     public void visit(ReturnExpr ReturnExpr);
     public void visit(PrintStmt PrintStmt);
     public void visit(ErrorStmt ErrorStmt);
-    public void visit(Assignment Assignment);
+    public void visit(DesignatorStmt DesignatorStmt);
     public void visit(NoStmt NoStmt);
     public void visit(Statements Statements);
     public void visit(SingleFormalParamDecl SingleFormalParamDecl);
