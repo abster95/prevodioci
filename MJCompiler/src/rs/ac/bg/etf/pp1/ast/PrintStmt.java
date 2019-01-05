@@ -1,11 +1,11 @@
 // generated with ast extension for cup
 // version 0.8
-// 5/0/2019 14:55:0
+// 5/0/2019 16:8:49
 
 
 package src.rs.ac.bg.etf.pp1.ast;
 
-public class PrintStmt extends Matched {
+public class PrintStmt extends Statement {
 
     private Expr Expr;
 

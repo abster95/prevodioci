@@ -50,10 +50,28 @@ scan with {:
 	return s;
 :}
 
-terminal PROG, LBRACE, RBRACE, SEMI, LPAREN, RPAREN, EQUAL, RETURN, PLUS, COMMA, PRINT, VOID;
-terminal Integer NUMBER;
-terminal String IDENT;
+// TERMINALS
+// keywords
+terminal PROG, PRINT, RETURN, VOID, CLASS, NEW, READ, DO, WHILE, EXTENDS, CONTINUE, CONST, BREAK ;
+
 terminal IF, ELSE;
+
+// arithmetic
+terminal MINUS, PLUS, DIV, MUL, MOD, AND, OR, INC, DEC ;
+
+// comparison
+terminal NEQ, GT, GTE, LT, LTE, EQEQ;
+
+// brackets, parents, braces
+terminal LBRACKET, RBRACKET, LPAREN, RPAREN, LBRACE, RBRACE ;
+
+// special
+terminal EQUAL, SEMI, COMMA, DOT ;
+
+terminal Integer NUMBER ;
+terminal String IDENT ;
+terminal Boolean BOOLCONST ;
+terminal Character CHAR ;
 
 nonterminal VarDeclList VarDeclList;
 nonterminal MethodDeclList MethodDeclList;
@@ -66,8 +84,7 @@ nonterminal Statement Statement;
 nonterminal Addop Addop;
 nonterminal ActualPars ActualPars;
 nonterminal ActualParamList ActualParamList;
-nonterminal Matched Matched;
-nonterminal Unmatched Unmatched;
+
 
 nonterminal rs.etf.pp1.symboltable.concepts.Obj ProgName, Program, MethodDecl, MethodTypeName, Designator;
 nonterminal rs.etf.pp1.symboltable.concepts.Struct Type, Term, Factor, Expr;
@@ -109,18 +126,7 @@ StatementList ::= (Statements) StatementList:S1 Statement:S2 {: RESULT=new State
 				(NoStmt) {: RESULT=new NoStmt(); :} /* epsilon */
 				;
 				
-Statement ::= (MatchedStmt) Matched:M1 {: RESULT=new MatchedStmt(M1); RESULT.setLine(M1left); :}
-		   |
-		   (UnmatchedStmt) Unmatched:U1 {: RESULT=new UnmatchedStmt(U1); RESULT.setLine(U1left); :}
-		   ; 
-
-Unmatched ::= (UnmatchedIf) IF Expr:E1 Statement:S2 {: RESULT=new UnmatchedIf(E1, S2); RESULT.setLine(E1left); :}
-		 	|
-		 	(UnmatchedIfElse) IF Expr:E1 Matched:M2 ELSE Unmatched:U3 {: RESULT=new UnmatchedIfElse(E1, M2, U3); RESULT.setLine(E1left); :}
-		 	;
-		 
-
-Matched ::= (Assignment) Designator:dest EQUAL Expr:e SEMI {: RESULT=new Assignment(dest, e); RESULT.setLine(destleft); :}
+Statement ::= (Assignment) Designator:dest EQUAL Expr:e SEMI {: RESULT=new Assignment(dest, e); RESULT.setLine(destleft); :}
 		   |
 		   (ErrorStmt) error SEMI:l
 		   {: parser.report_error("Izvrsen oporavak do ; u liniji " + lleft, null);  :} {: RESULT=new ErrorStmt(); :}
@@ -131,10 +137,9 @@ Matched ::= (Assignment) Designator:dest EQUAL Expr:e SEMI {: RESULT=new Assignm
 		   |
 		   (ReturnNoExpr) RETURN SEMI {: RESULT=new ReturnNoExpr(); :}
 		   |
-		   (MatchedStatement) IF Expr:E1 Matched:M2 ELSE Matched:M3 {: RESULT=new MatchedStatement(E1, M2, M3); RESULT.setLine(E1left); :}
-		   |
 		   (ProcCall) Designator:func LPAREN ActualPars:A1 RPAREN SEMI {: RESULT=new ProcCall(func, A1); RESULT.setLine(funcleft); :}
-			;
+		   ; 
+
 			
 Expr ::= (AddExpr) Expr:te Addop:A1 Term:t {: RESULT=new AddExpr(te, A1, t); RESULT.setLine(teleft); :}
 	 |

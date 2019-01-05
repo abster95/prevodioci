@@ -1,6 +1,6 @@
 // generated with ast extension for cup
 // version 0.8
-// 5/0/2019 14:55:0
+// 5/0/2019 16:8:50
 
 
 package src.rs.ac.bg.etf.pp1.ast;
@@ -13,12 +13,10 @@ public interface Visitor {
     public void visit(FormalParamList FormalParamList);
     public void visit(FormPars FormPars);
     public void visit(VarDeclList VarDeclList);
-    public void visit(Unmatched Unmatched);
     public void visit(FormalParamDecl FormalParamDecl);
     public void visit(MethodDeclList MethodDeclList);
     public void visit(Statement Statement);
     public void visit(StatementList StatementList);
-    public void visit(Matched Matched);
     public void visit(ActualPars ActualPars);
     public void visit(Addop Addop);
     public void visit(Designator Designator);
@@ -33,16 +31,11 @@ public interface Visitor {
     public void visit(TermExpr TermExpr);
     public void visit(AddExpr AddExpr);
     public void visit(ProcCall ProcCall);
-    public void visit(MatchedStatement MatchedStatement);
     public void visit(ReturnNoExpr ReturnNoExpr);
     public void visit(ReturnExpr ReturnExpr);
     public void visit(PrintStmt PrintStmt);
     public void visit(ErrorStmt ErrorStmt);
     public void visit(Assignment Assignment);
-    public void visit(UnmatchedIfElse UnmatchedIfElse);
-    public void visit(UnmatchedIf UnmatchedIf);
-    public void visit(UnmatchedStmt UnmatchedStmt);
-    public void visit(MatchedStmt MatchedStmt);
     public void visit(NoStmt NoStmt);
     public void visit(Statements Statements);
     public void visit(SingleFormalParamDecl SingleFormalParamDecl);
