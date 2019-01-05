@@ -82,10 +82,13 @@ nonterminal FormalParamList FormalParamList;
 nonterminal FormalParamDecl FormalParamDecl;
 nonterminal Statement Statement;
 nonterminal Addop Addop;
+nonterminal Mulop Mulop;
 nonterminal ActualPars ActualPars;
 nonterminal ActualParamList ActualParamList;
 
 nonterminal DesignatorStatement DesignatorStatement;
+nonterminal TermList TermList;
+nonterminal FactorList FactorList;
 
 
 nonterminal rs.etf.pp1.symboltable.concepts.Obj ProgName, Program, MethodDecl, MethodTypeName, Designator;
@@ -150,19 +153,32 @@ DesignatorStatement ::= (Assignment) Designator:dest EQUAL Expr:e {: RESULT=new 
 						; 
 
 			
-Expr ::= (AddExpr) Expr:te Addop:A1 Term:t {: RESULT=new AddExpr(te, A1, t); RESULT.setLine(teleft); :}
-	 |
-	 (TermExpr) Term:t {: RESULT=new TermExpr(t); RESULT.setLine(tleft); :}
-	 ;
+Expr ::= (ArithmeticExpr) TermList:T1 {: RESULT=new ArithmeticExpr(T1); RESULT.setLine(T1left); :}
+		 |
+		 (OperatorNewExpr) NEW Type:T1 {: RESULT=new OperatorNewExpr(T1); RESULT.setLine(T1left); :}
+		 |
+		 (OperatorNewArray) NEW Type:T1 LBRACKET Expr:E2 RBRACKET {: RESULT=new OperatorNewArray(T1, E2); RESULT.setLine(T1left); :}
+		 ;
 
-Term ::= (Term) Factor:t {: RESULT=new Term(t); RESULT.setLine(tleft); :};
+TermList ::= (AddopExpr) TermList:T1 Addop:A2 Term:T3 {: RESULT=new AddopExpr(T1, A2, T3); RESULT.setLine(T1left); :}
+			|
+			(SingleTermExpr) Term:T1 {: RESULT=new SingleTermExpr(T1); RESULT.setLine(T1left); :}
+			;
 
-Factor ::= (Const) NUMBER:N1 {: RESULT=new Const(N1); RESULT.setLine(N1left); :}
-		|
-		(Var) Designator:d {: RESULT=new Var(d); RESULT.setLine(dleft); :}
-		| 
-		(FuncCall) Designator:func LPAREN ActualPars:A1 RPAREN {: RESULT=new FuncCall(func, A1); RESULT.setLine(funcleft); :}
-		;
+Term ::= (Term) FactorList:F1 {: RESULT=new Term(F1); RESULT.setLine(F1left); :};
+
+FactorList ::= (MulopExpr) FactorList:F1 Mulop:M2 Factor:F3 {: RESULT=new MulopExpr(F1, M2, F3); RESULT.setLine(F1left); :}
+				|
+				(SingleFactor) Factor:F1 {: RESULT=new SingleFactor(F1); RESULT.setLine(F1left); :}
+				|
+				(NegatedFactor) MINUS Factor:F1 {: RESULT=new NegatedFactor(F1); RESULT.setLine(F1left); :}
+				;
+Factor ::= (DesignatorFactor) Designator:D1 {: RESULT=new DesignatorFactor(D1); RESULT.setLine(D1left); :}
+			|
+			(FuncCallFactor) Designator:func LPAREN ActualPars:A1 RPAREN {: RESULT=new FuncCallFactor(func, A1); RESULT.setLine(funcleft); :}
+			|
+			(ConstFactor) NUMBER:N1 {: RESULT=new ConstFactor(N1); RESULT.setLine(N1left); :}
+;
 		
 ActualPars ::= (Actuals) ActualParamList:A1 {: RESULT=new Actuals(A1); RESULT.setLine(A1left); :}
 			|
@@ -176,7 +192,8 @@ ActualParamList ::= (ActualParams) ActualParamList:A1 COMMA Expr:E2 {: RESULT=ne
 				
 Designator ::= (Designator) IDENT:name {: RESULT=new Designator(name); RESULT.setLine(nameleft); :};
 
-Addop ::= (Addop) PLUS {: RESULT=new Addop(); :};
+Addop ::= (AddopPlus) PLUS {: RESULT=new AddopPlus(); :} | (AddopMinus) MINUS {: RESULT=new AddopMinus(); :};
+Mulop ::= (MulopMul) MUL {: RESULT=new MulopMul(); :} | (MulopDiv) DIV {: RESULT=new MulopDiv(); :} | (MulopMod) MOD {: RESULT=new MulopMod(); :};
 		
 		
 

@@ -97,44 +97,6 @@ public class SemanticPass extends VisitorAdaptor {
     }
     
     
-    public void visit(FuncCall funcCall){
-    	Obj func = funcCall.getDesignator().obj;
-    	if(Obj.Meth == func.getKind()){
-			report_info("Pronadjen poziv funkcije " + func.getName() + " na liniji " + funcCall.getLine(), null);
-			funcCall.struct = func.getType();
-    	}else{
-			report_error("Greska na liniji " + funcCall.getLine()+" : ime " + func.getName() + " nije funkcija!", null);
-			funcCall.struct = Tab.noType;
-    	}
-    }
-    
-    public void visit(Term term){
-    	term.struct = term.getFactor().struct;
-    }
-    
-    public void visit(TermExpr termExpr){
-    	termExpr.struct = termExpr.getTerm().struct;
-    }
-    
-    public void visit(AddExpr addExpr){
-    	Struct te = addExpr.getExpr().struct;
-    	Struct t = addExpr.getTerm().struct;
-    	if(te.equals(t) && te == Tab.intType){
-    		addExpr.struct = te;
-    	}else{
-			report_error("Greska na liniji "+ addExpr.getLine()+" : nekompatibilni tipovi u izrazu za sabiranje.", null);
-			addExpr.struct = Tab.noType;
-    	}
-    }
-    
-    public void visit(Const cnst){
-    	cnst.struct = Tab.intType;
-    }
-    
-    public void visit(Var var){
-    	var.struct = var.getDesignator().obj.getType();
-    }
-    
     public void visit(ReturnExpr returnExpr){
     	returnFound = true;
     	Struct currMethType = currentMethod.getType();
@@ -142,12 +104,6 @@ public class SemanticPass extends VisitorAdaptor {
 			report_error("Greska na liniji " + returnExpr.getLine() + " : " + "tip izraza u return naredbi ne slaze se sa tipom povratne vrednosti funkcije " + currentMethod.getName(), null);
     	}
     }
-    
-    public void visit(Assignment assignment){
-    	if(!assignment.getExpr().struct.assignableTo(assignment.getDesignator().obj.getType()))
-    		report_error("Greska na liniji " + assignment.getLine() + " : " + "nekompatibilni tipovi u dodeli vrednosti! ", null);
-    }
-    
     
     public boolean passed(){
     	return !errorDetected;

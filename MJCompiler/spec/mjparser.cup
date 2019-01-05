@@ -75,9 +75,9 @@ terminal Character CHAR ;
 
 nonterminal VarDeclList, MethodDeclList, VarDecl;
 nonterminal FormPars, StatementList, FormalParamList, FormalParamDecl, Statement;
-nonterminal Addop, ActualPars, ActualParamList;
+nonterminal Addop, Mulop, ActualPars, ActualParamList;
 
-nonterminal DesignatorStatement;
+nonterminal DesignatorStatement, TermList, FactorList;
 
 
 nonterminal rs.etf.pp1.symboltable.concepts.Obj ProgName, Program, MethodDecl, MethodTypeName, Designator;
@@ -142,19 +142,32 @@ DesignatorStatement ::= (Assignment) Designator:dest EQUAL Expr:e
 						; 
 
 			
-Expr ::= (AddExpr) Expr:te Addop Term:t
-	 |
-	 (TermExpr) Term:t
-	 ;
+Expr ::= (ArithmeticExpr) TermList
+		 |
+		 (OperatorNewExpr) NEW Type
+		 |
+		 (OperatorNewArray) NEW Type LBRACKET Expr RBRACKET
+		 ;
 
-Term ::= (Term) Factor:t;
+TermList ::= (AddopExpr) TermList Addop Term
+			|
+			(SingleTermExpr) Term
+			;
 
-Factor ::= (Const) NUMBER
-		|
-		(Var) Designator:d
-		| 
-		(FuncCall) Designator:func LPAREN ActualPars RPAREN
-		;
+Term ::= (Term) FactorList;
+
+FactorList ::= (MulopExpr) FactorList Mulop Factor
+				|
+				(SingleFactor) Factor
+				|
+				(NegatedFactor) MINUS Factor
+				;
+Factor ::= (DesignatorFactor) Designator
+			|
+			(FuncCallFactor) Designator:func LPAREN ActualPars RPAREN
+			|
+			(ConstFactor) NUMBER
+;
 		
 ActualPars ::= (Actuals) ActualParamList
 			|
@@ -168,7 +181,8 @@ ActualParamList ::= (ActualParams) ActualParamList COMMA Expr
 				
 Designator ::= (Designator) IDENT:name;
 
-Addop ::= (Addop) PLUS;
+Addop ::= (AddopPlus) PLUS | (AddopMinus) MINUS;
+Mulop ::= (MulopMul) MUL | (MulopDiv) DIV | (MulopMod) MOD;
 		
 		
 
