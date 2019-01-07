@@ -1,6 +1,6 @@
 // generated with ast extension for cup
 // version 0.8
-// 7/0/2019 18:27:17
+// 7/0/2019 20:25:25
 
 
 package rs.ac.bg.etf.pp1.ast;
@@ -17,13 +17,16 @@ public abstract class VisitorAdaptor implements Visitor {
     public void visit(FormalParamList FormalParamList) { }
     public void visit(FormPars FormPars) { }
     public void visit(VarDeclList VarDeclList) { }
+    public void visit(EnumDeclList EnumDeclList) { }
     public void visit(Access Access) { }
     public void visit(Addop Addop) { }
     public void visit(FormalParamDecl FormalParamDecl) { }
     public void visit(MethodDeclList MethodDeclList) { }
     public void visit(Statement Statement) { }
     public void visit(TermList TermList) { }
+    public void visit(Enumerations Enumerations) { }
     public void visit(StatementList StatementList) { }
+    public void visit(Enumeration Enumeration) { }
     public void visit(ActualPars ActualPars) { }
     public void visit(MulopMod MulopMod) { visit(); }
     public void visit(MulopDiv MulopDiv) { visit(); }
@@ -62,6 +65,13 @@ public abstract class VisitorAdaptor implements Visitor {
     public void visit(DesignatorStmt DesignatorStmt) { visit(); }
     public void visit(NoStmt NoStmt) { visit(); }
     public void visit(Statements Statements) { visit(); }
+    public void visit(EnumDefault EnumDefault) { visit(); }
+    public void visit(EnumNoDefault EnumNoDefault) { visit(); }
+    public void visit(SingleEnum SingleEnum) { visit(); }
+    public void visit(MultipleEnums MultipleEnums) { visit(); }
+    public void visit(EnumDecl EnumDecl) { visit(); }
+    public void visit(NoEnumDeclaration NoEnumDeclaration) { visit(); }
+    public void visit(EnumDeclarations EnumDeclarations) { visit(); }
     public void visit(SingleFormalParamDecl SingleFormalParamDecl) { visit(); }
     public void visit(FormalParamDecls FormalParamDecls) { visit(); }
     public void visit(NoFormParam NoFormParam) { visit(); }

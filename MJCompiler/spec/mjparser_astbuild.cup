@@ -52,7 +52,7 @@ scan with {:
 
 // TERMINALS
 // keywords
-terminal PROG, PRINT, RETURN, VOID, CLASS, NEW, READ, DO, WHILE, EXTENDS, CONTINUE, CONST, BREAK ;
+terminal PROG, PRINT, RETURN, VOID, CLASS, NEW, READ, ENUM, EXTENDS, CONTINUE, CONST, BREAK, INTERFACE ;
 
 terminal IF, ELSE;
 
@@ -90,12 +90,16 @@ nonterminal DesignatorStatement DesignatorStatement;
 nonterminal Access Access;
 nonterminal TermList TermList;
 nonterminal FactorList FactorList;
+nonterminal EnumDeclList EnumDeclList;
+nonterminal EnumDecl EnumDecl;
+nonterminal Enumerations Enumerations;
+nonterminal Enumeration Enumeration;
 
 
 nonterminal rs.etf.pp1.symboltable.concepts.Obj ProgName, Program, MethodDecl, MethodTypeName, Designator;
 nonterminal rs.etf.pp1.symboltable.concepts.Struct Type, Term, Factor, Expr;
 
-Program ::= (Program) PROG ProgName:p VarDeclList:V1 LBRACE MethodDeclList:M2 RBRACE {: RESULT=new Program(p, V1, M2); RESULT.setLine(pleft); :};
+Program ::= (Program) PROG ProgName:p VarDeclList:V1 EnumDeclList:E2 LBRACE MethodDeclList:M3 RBRACE {: RESULT=new Program(p, V1, E2, M3); RESULT.setLine(pleft); :};
 
 ProgName ::= (ProgName) IDENT:progName {: RESULT=new ProgName(progName); RESULT.setLine(progNameleft); :};
 
@@ -126,6 +130,23 @@ FormalParamList ::= (FormalParamDecls) FormalParamList:F1 COMMA FormalParamDecl:
 				|
 				(SingleFormalParamDecl) FormalParamDecl:F1 {: RESULT=new SingleFormalParamDecl(F1); RESULT.setLine(F1left); :}
 				;
+
+EnumDeclList ::= (EnumDeclarations) EnumDeclList:E1 EnumDecl:E2 {: RESULT=new EnumDeclarations(E1, E2); RESULT.setLine(E1left); :}
+					|
+					(NoEnumDeclaration) {: RESULT=new NoEnumDeclaration(); :} /* epsilon */
+					;
+
+EnumDecl ::= (EnumDecl) ENUM IDENT:enumName LBRACE Enumerations:E1 RBRACE {: RESULT=new EnumDecl(enumName, E1); RESULT.setLine(enumNameleft); :};
+
+Enumerations ::= (MultipleEnums) Enumerations:E1 COMMA Enumeration:E2 {: RESULT=new MultipleEnums(E1, E2); RESULT.setLine(E1left); :}
+				 |
+				 (SingleEnum) Enumeration:E1 {: RESULT=new SingleEnum(E1); RESULT.setLine(E1left); :}
+				 ;
+
+Enumeration ::= (EnumNoDefault) IDENT:id {: RESULT=new EnumNoDefault(id); RESULT.setLine(idleft); :}
+				 |
+				 (EnumDefault) IDENT:id EQUAL NUMBER:val {: RESULT=new EnumDefault(id, val); RESULT.setLine(idleft); :}
+				 ;
 
 StatementList ::= (Statements) StatementList:S1 Statement:S2 {: RESULT=new Statements(S1, S2); RESULT.setLine(S1left); :}
 				|

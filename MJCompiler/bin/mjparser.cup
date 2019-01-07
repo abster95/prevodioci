@@ -52,7 +52,7 @@ scan with {:
 
 // TERMINALS
 // keywords
-terminal PROG, PRINT, RETURN, VOID, CLASS, NEW, READ, DO, WHILE, EXTENDS, CONTINUE, CONST, BREAK ;
+terminal PROG, PRINT, RETURN, VOID, CLASS, NEW, READ, ENUM, EXTENDS, CONTINUE, CONST, BREAK, INTERFACE ;
 
 terminal IF, ELSE;
 
@@ -78,12 +78,13 @@ nonterminal FormPars, StatementList, FormalParamList, FormalParamDecl, Statement
 nonterminal Addop, Mulop, ActualPars, ActualParamList;
 
 nonterminal DesignatorStatement, Access, TermList, FactorList;
+nonterminal EnumDeclList, EnumDecl, Enumerations, Enumeration;
 
 
 nonterminal rs.etf.pp1.symboltable.concepts.Obj ProgName, Program, MethodDecl, MethodTypeName, Designator;
 nonterminal rs.etf.pp1.symboltable.concepts.Struct Type, Term, Factor, Expr;
 
-Program ::= (Program) PROG ProgName:p VarDeclList LBRACE MethodDeclList RBRACE;
+Program ::= (Program) PROG ProgName:p VarDeclList EnumDeclList LBRACE MethodDeclList RBRACE;
 
 ProgName ::= (ProgName) IDENT:progName;
 
@@ -114,6 +115,23 @@ FormalParamList ::= (FormalParamDecls) FormalParamList COMMA FormalParamDecl
 				|
 				(SingleFormalParamDecl) FormalParamDecl
 				;
+
+EnumDeclList ::= (EnumDeclarations) EnumDeclList EnumDecl
+					|
+					(NoEnumDeclaration) /* epsilon */
+					;
+
+EnumDecl ::= (EnumDecl) ENUM IDENT:enumName LBRACE Enumerations RBRACE;
+
+Enumerations ::= (MultipleEnums) Enumerations COMMA Enumeration
+				 |
+				 (SingleEnum) Enumeration
+				 ;
+
+Enumeration ::= (EnumNoDefault) IDENT:id
+				 |
+				 (EnumDefault) IDENT:id EQUAL NUMBER:val
+				 ;
 
 StatementList ::= (Statements) StatementList Statement
 				|

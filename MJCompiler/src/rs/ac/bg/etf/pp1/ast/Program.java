@@ -1,6 +1,6 @@
 // generated with ast extension for cup
 // version 0.8
-// 7/0/2019 18:27:17
+// 7/0/2019 20:25:25
 
 
 package rs.ac.bg.etf.pp1.ast;
@@ -13,13 +13,16 @@ public class Program implements SyntaxNode {
 
     private ProgName ProgName;
     private VarDeclList VarDeclList;
+    private EnumDeclList EnumDeclList;
     private MethodDeclList MethodDeclList;
 
-    public Program (ProgName ProgName, VarDeclList VarDeclList, MethodDeclList MethodDeclList) {
+    public Program (ProgName ProgName, VarDeclList VarDeclList, EnumDeclList EnumDeclList, MethodDeclList MethodDeclList) {
         this.ProgName=ProgName;
         if(ProgName!=null) ProgName.setParent(this);
         this.VarDeclList=VarDeclList;
         if(VarDeclList!=null) VarDeclList.setParent(this);
+        this.EnumDeclList=EnumDeclList;
+        if(EnumDeclList!=null) EnumDeclList.setParent(this);
         this.MethodDeclList=MethodDeclList;
         if(MethodDeclList!=null) MethodDeclList.setParent(this);
     }
@@ -38,6 +41,14 @@ public class Program implements SyntaxNode {
 
     public void setVarDeclList(VarDeclList VarDeclList) {
         this.VarDeclList=VarDeclList;
+    }
+
+    public EnumDeclList getEnumDeclList() {
+        return EnumDeclList;
+    }
+
+    public void setEnumDeclList(EnumDeclList EnumDeclList) {
+        this.EnumDeclList=EnumDeclList;
     }
 
     public MethodDeclList getMethodDeclList() {
@@ -71,6 +82,7 @@ public class Program implements SyntaxNode {
     public void childrenAccept(Visitor visitor) {
         if(ProgName!=null) ProgName.accept(visitor);
         if(VarDeclList!=null) VarDeclList.accept(visitor);
+        if(EnumDeclList!=null) EnumDeclList.accept(visitor);
         if(MethodDeclList!=null) MethodDeclList.accept(visitor);
     }
 
@@ -78,12 +90,14 @@ public class Program implements SyntaxNode {
         accept(visitor);
         if(ProgName!=null) ProgName.traverseTopDown(visitor);
         if(VarDeclList!=null) VarDeclList.traverseTopDown(visitor);
+        if(EnumDeclList!=null) EnumDeclList.traverseTopDown(visitor);
         if(MethodDeclList!=null) MethodDeclList.traverseTopDown(visitor);
     }
 
     public void traverseBottomUp(Visitor visitor) {
         if(ProgName!=null) ProgName.traverseBottomUp(visitor);
         if(VarDeclList!=null) VarDeclList.traverseBottomUp(visitor);
+        if(EnumDeclList!=null) EnumDeclList.traverseBottomUp(visitor);
         if(MethodDeclList!=null) MethodDeclList.traverseBottomUp(visitor);
         accept(visitor);
     }
@@ -101,6 +115,12 @@ public class Program implements SyntaxNode {
 
         if(VarDeclList!=null)
             buffer.append(VarDeclList.toString("  "+tab));
+        else
+            buffer.append(tab+"  null");
+        buffer.append("\n");
+
+        if(EnumDeclList!=null)
+            buffer.append(EnumDeclList.toString("  "+tab));
         else
             buffer.append(tab+"  null");
         buffer.append("\n");

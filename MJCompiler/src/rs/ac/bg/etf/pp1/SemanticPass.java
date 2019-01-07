@@ -14,99 +14,120 @@ public class SemanticPass extends VisitorAdaptor {
 	boolean returnFound = false;
 	boolean errorDetected = false;
 	int nVars;
-	
+
 	Logger log = Logger.getLogger(getClass());
 
 	public void report_error(String message, SyntaxNode info) {
 		errorDetected = true;
 		StringBuilder msg = new StringBuilder(message);
-		int line = (info == null) ? 0: info.getLine();
+		int line = (info == null) ? 0 : info.getLine();
 		if (line != 0)
-			msg.append (" na liniji ").append(line);
+			msg.append(" at line ").append(line);
 		log.error(msg.toString());
 	}
 
 	public void report_info(String message, SyntaxNode info) {
-		StringBuilder msg = new StringBuilder(message); 
-		int line = (info == null) ? 0: info.getLine();
+		StringBuilder msg = new StringBuilder(message);
+		int line = (info == null) ? 0 : info.getLine();
 		if (line != 0)
-			msg.append (" na liniji ").append(line);
+			msg.append(" at line ").append(line);
 		log.info(msg.toString());
 	}
-	
-	public void visit(VarDecl varDecl){
+
+	public void visit(VarDecl varDecl) {
+		Obj existing = Tab.find(varDecl.getVarName());
+		if (existing != Tab.noObj) {
+			report_error("Variable with name '" + varDecl.getVarName() + "' already declared in current scope!",
+					varDecl);
+			return;
+		}
 		varDeclCount++;
-		report_info("Deklarisana promenljiva "+ varDecl.getVarName(), varDecl);
+		report_info("Variable declaration: " + varDecl.getVarName(), varDecl);
 		Obj varNode = Tab.insert(Obj.Var, varDecl.getVarName(), varDecl.getType().struct);
 	}
-	
-    public void visit(PrintStmt print) {
+
+	public void visit(PrintStmt print) {
 		printCallCount++;
 	}
-    
-    public void visit(ProgName progName){
-    	progName.obj = Tab.insert(Obj.Prog, progName.getProgName(), Tab.noType);
-    	Tab.openScope();
-    }
-    
-    public void visit(Program program){
-    	nVars = Tab.currentScope.getnVars();
-    	Tab.chainLocalSymbols(program.getProgName().obj);
-    	Tab.closeScope();
-    }
-    
-    public void visit(Type type){
-    	Obj typeNode = Tab.find(type.getTypeName());
-    	if(typeNode == Tab.noObj){
-    		report_error("Nije pronadjen tip " + type.getTypeName() + " u tabeli simbola! ", null);
-    		type.struct = Tab.noType;
-    	}else{
-    		if(Obj.Type == typeNode.getKind()){
-    			type.struct = typeNode.getType();
-    		}else{
-    			report_error("Greska: Ime " + type.getTypeName() + " ne predstavlja tip!", type);
-    			type.struct = Tab.noType;
-    		}
-    	}
-    }
-    
-    public void visit(MethodTypeName methodTypeName){
-    	currentMethod = Tab.insert(Obj.Meth, methodTypeName.getMethName(), methodTypeName.getType().struct);
-    	methodTypeName.obj = currentMethod;
-    	Tab.openScope();
+
+	public void visit(ProgName progName) {
+		progName.obj = Tab.insert(Obj.Prog, progName.getProgName(), Tab.noType);
+		Tab.openScope();
+	}
+
+	public void visit(Program program) {
+		nVars = Tab.currentScope.getnVars();
+		Tab.chainLocalSymbols(program.getProgName().obj);
+		Tab.closeScope();
+	}
+
+	public void visit(Type type) {
+		Obj typeNode = Tab.find(type.getTypeName());
+		if (typeNode == Tab.noObj) {
+			report_error("Nije pronadjen tip " + type.getTypeName() + " u tabeli simbola! ", null);
+			type.struct = Tab.noType;
+		} else {
+			if (Obj.Type == typeNode.getKind()) {
+				type.struct = typeNode.getType();
+			} else {
+				report_error("Greska: Ime " + type.getTypeName() + " ne predstavlja tip!", type);
+				type.struct = Tab.noType;
+			}
+		}
+	}
+
+	public void visit(MethodTypeName methodTypeName) {
+		currentMethod = Tab.insert(Obj.Meth, methodTypeName.getMethName(), methodTypeName.getType().struct);
+		methodTypeName.obj = currentMethod;
+		Tab.openScope();
 		report_info("Obradjuje se funkcija " + methodTypeName.getMethName(), methodTypeName);
-    }
-    
-    public void visit(MethodDecl methodDecl){
-    	if(!returnFound && currentMethod.getType() != Tab.noType){
-			report_error("Semanticka greska na liniji " + methodDecl.getLine() + ": funkcija " + currentMethod.getName() + " nema return iskaz!", null);
-    	}
-    	Tab.chainLocalSymbols(currentMethod);
-    	Tab.closeScope();
-    	
-    	returnFound = false;
-    	currentMethod = null;
-    }
-    
-    public void visit(NamedDesignator designator){
-    	Obj obj = Tab.find(designator.getName());
-    	if(obj == Tab.noObj){
-			report_error("Greska na liniji " + designator.getLine()+ " : ime "+designator.getName()+" nije deklarisano! ", null);
-    	}
-    	designator.obj = obj;
-    }
-    
-    
-    public void visit(ReturnExpr returnExpr){
-    	returnFound = true;
-    	Struct currMethType = currentMethod.getType();
-    	if(!currMethType.compatibleWith(returnExpr.getExpr().struct)){
-			report_error("Greska na liniji " + returnExpr.getLine() + " : " + "tip izraza u return naredbi ne slaze se sa tipom povratne vrednosti funkcije " + currentMethod.getName(), null);
-    	}
-    }
-    
-    public boolean passed(){
-    	return !errorDetected;
-    }
-    
+	}
+
+	public void visit(MethodDecl methodDecl) {
+		if (!returnFound && currentMethod.getType() != Tab.noType) {
+			report_error("Semanticka greska na liniji " + methodDecl.getLine() + ": funkcija " + currentMethod.getName()
+					+ " nema return iskaz!", null);
+		}
+		Tab.chainLocalSymbols(currentMethod);
+		Tab.closeScope();
+
+		returnFound = false;
+		currentMethod = null;
+	}
+
+	public void visit(NamedDesignator designator) {
+		Obj obj = Tab.find(designator.getName());
+		if (obj == Tab.noObj) {
+			report_error("Greska na liniji " + designator.getLine() + " : ime " + designator.getName()
+					+ " nije deklarisano! ", null);
+		}
+		designator.obj = obj;
+	}
+
+	public void visit(ReturnExpr returnExpr) {
+		returnFound = true;
+		Struct currMethType = currentMethod.getType();
+		if (!currMethType.compatibleWith(returnExpr.getExpr().struct)) {
+			report_error("Greska na liniji " + returnExpr.getLine() + " : "
+					+ "tip izraza u return naredbi ne slaze se sa tipom povratne vrednosti funkcije "
+					+ currentMethod.getName(), null);
+		}
+	}
+	
+	public void visit(NumFactor numFactor) {
+		numFactor.struct = Tab.intType;
+	}
+	
+	public void visit(CharFactor charFactor) {
+		charFactor.struct = Tab.charType;
+	}
+	
+	public void visit(DesignatorFactor designatorFactor) {
+		//Obj designator = Tab.find(designatorFactor.getDesignator())
+	}
+
+	public boolean passed() {
+		return !errorDetected;
+	}
+
 }
