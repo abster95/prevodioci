@@ -16,7 +16,7 @@ program MJProgram
 			print(2);
 			
 			k();
-			
+			a = x.y + new int[20];
 			return 1;
 		}
 	

@@ -176,10 +176,6 @@ DesignatorStatement ::= (Assignment) Designator:dest EQUAL Expr:e {: RESULT=new 
 
 			
 Expr ::= (ArithmeticExpr) TermList:T1 {: RESULT=new ArithmeticExpr(T1); RESULT.setLine(T1left); :}
-		 |
-		 (OperatorNewExpr) NEW Type:T1 {: RESULT=new OperatorNewExpr(T1); RESULT.setLine(T1left); :}
-		 |
-		 (OperatorNewArray) NEW Type:T1 LBRACKET Expr:E2 RBRACKET {: RESULT=new OperatorNewArray(T1, E2); RESULT.setLine(T1left); :}
 		 ;
 
 TermList ::= (AddopExpr) TermList:T1 Addop:A2 Term:T3 {: RESULT=new AddopExpr(T1, A2, T3); RESULT.setLine(T1left); :}
@@ -198,6 +194,12 @@ FactorList ::= (MulopExpr) FactorList:F1 Mulop:M2 Factor:F3 {: RESULT=new MulopE
 Factor ::= (DesignatorFactor) Designator:D1 {: RESULT=new DesignatorFactor(D1); RESULT.setLine(D1left); :}
 			|
 			(FuncCallFactor) Designator:func LPAREN ActualPars:A1 RPAREN {: RESULT=new FuncCallFactor(func, A1); RESULT.setLine(funcleft); :}
+			|			
+			(OperatorNew) NEW Type:T1 {: RESULT=new OperatorNew(T1); RESULT.setLine(T1left); :}
+			|
+			(OperatorNewArray) NEW Type:T1 LBRACKET Expr:E2 RBRACKET {: RESULT=new OperatorNewArray(T1, E2); RESULT.setLine(T1left); :}
+			|
+			(ParenthesisExpr) LPAREN Expr:E1 RPAREN {: RESULT=new ParenthesisExpr(E1); RESULT.setLine(E1left); :}
 			|
 			(NumFactor) NUMBER:N1 {: RESULT=new NumFactor(N1); RESULT.setLine(N1left); :}
 			|
