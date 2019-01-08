@@ -1,6 +1,6 @@
 // generated with ast extension for cup
 // version 0.8
-// 7/0/2019 21:1:24
+// 8/0/2019 20:43:17
 
 
 package rs.ac.bg.etf.pp1.ast;
@@ -17,8 +17,8 @@ public interface Visitor {
     public void visit(FormalParamList FormalParamList);
     public void visit(FormPars FormPars);
     public void visit(VarDeclList VarDeclList);
-    public void visit(EnumDeclList EnumDeclList);
     public void visit(Access Access);
+    public void visit(EnumDeclList EnumDeclList);
     public void visit(Addop Addop);
     public void visit(FormalParamDecl FormalParamDecl);
     public void visit(MethodDeclList MethodDeclList);
@@ -35,7 +35,6 @@ public interface Visitor {
     public void visit(AddopPlus AddopPlus);
     public void visit(AccessArray AccessArray);
     public void visit(AccessField AccessField);
-    public void visit(AccessDesignator AccessDesignator);
     public void visit(NamedDesignator NamedDesignator);
     public void visit(ActualParam ActualParam);
     public void visit(ActualParams ActualParams);
@@ -70,6 +69,7 @@ public interface Visitor {
     public void visit(EnumNoDefault EnumNoDefault);
     public void visit(SingleEnum SingleEnum);
     public void visit(MultipleEnums MultipleEnums);
+    public void visit(EnumName EnumName);
     public void visit(EnumDecl EnumDecl);
     public void visit(NoEnumDeclaration NoEnumDeclaration);
     public void visit(EnumDeclarations EnumDeclarations);

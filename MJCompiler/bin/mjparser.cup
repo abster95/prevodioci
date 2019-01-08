@@ -77,12 +77,14 @@ nonterminal VarDeclList, MethodDeclList, VarDecl;
 nonterminal FormPars, StatementList, FormalParamList, FormalParamDecl, Statement;
 nonterminal Addop, Mulop, ActualPars, ActualParamList;
 
-nonterminal DesignatorStatement, Access, TermList, FactorList;
-nonterminal EnumDeclList, EnumDecl, Enumerations, Enumeration;
+nonterminal DesignatorStatement, TermList, FactorList;
+nonterminal EnumDeclList;
 
 
-nonterminal rs.etf.pp1.symboltable.concepts.Obj ProgName, Program, MethodDecl, MethodTypeName, Designator;
+nonterminal rs.etf.pp1.symboltable.concepts.Obj ProgName, Program, MethodDecl, MethodTypeName, Designator, Access;
+nonterminal rs.etf.pp1.symboltable.concepts.Obj EnumDecl, EnumName, Enumerations, Enumeration;
 nonterminal rs.etf.pp1.symboltable.concepts.Struct Type, Term, Factor, Expr;
+
 
 Program ::= (Program) PROG ProgName:p VarDeclList EnumDeclList LBRACE MethodDeclList RBRACE;
 
@@ -121,7 +123,9 @@ EnumDeclList ::= (EnumDeclarations) EnumDeclList EnumDecl
 					(NoEnumDeclaration) /* epsilon */
 					;
 
-EnumDecl ::= (EnumDecl) ENUM IDENT:enumName LBRACE Enumerations RBRACE;
+EnumDecl ::= (EnumDecl)  EnumName LBRACE Enumerations RBRACE;
+
+EnumName ::= (EnumName) ENUM IDENT:enumName;
 
 Enumerations ::= (MultipleEnums) Enumerations COMMA Enumeration
 				 |
@@ -176,6 +180,7 @@ FactorList ::= (MulopExpr) FactorList Mulop Factor
 				|
 				(NegatedFactor) MINUS Factor
 				;
+
 Factor ::= (DesignatorFactor) Designator
 			|
 			(FuncCallFactor) Designator:func LPAREN ActualPars RPAREN
@@ -206,13 +211,11 @@ ActualParamList ::= (ActualParams) ActualParamList COMMA Expr
 				
 Designator ::= (NamedDesignator) IDENT:name
 				|
-				(AccessDesignator) Access
+				(AccessField) IDENT:varName DOT IDENT:field
+				|
+				(AccessArray) IDENT:arrayName LBRACKET Expr RBRACKET
 ;
 
-Access ::= (AccessField) IDENT:varName DOT IDENT:field
-			|
-			(AccessArray) IDENT:arrayName LBRACKET Expr RBRACKET
-			;
 
 Addop ::= (AddopPlus) PLUS | (AddopMinus) MINUS;
 Mulop ::= (MulopMul) MUL | (MulopDiv) DIV | (MulopMod) MOD;

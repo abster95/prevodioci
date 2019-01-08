@@ -8,6 +8,6 @@
 	<classpathentry kind="lib" path="lib/cup_v10k.jar"/>
 	<classpathentry kind="lib" path="lib/JFlex.jar"/>
 	<classpathentry kind="lib" path="lib/log4j-1.2.17.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Abi/Desktop/pp1/Semanticka/Izvorni kod/MJCompiler/lib/symboltable.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Abi/Desktop/pp1/Semanticka/Izvorni kod/MJCompiler/lib/symboltable-1-1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

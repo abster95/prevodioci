@@ -11,6 +11,9 @@ public class SemanticPass extends VisitorAdaptor {
 	int printCallCount = 0;
 	int varDeclCount = 0;
 	Obj currentMethod = null;
+	Obj currentEnum = null;
+	int lastEnumValue = 0;
+	public static final int EnumObj = 7; // missing in the Obj.class specification
 	boolean returnFound = false;
 	boolean errorDetected = false;
 	int nVars;
@@ -64,7 +67,7 @@ public class SemanticPass extends VisitorAdaptor {
 	public void visit(Type type) {
 		Obj typeNode = Tab.find(type.getTypeName());
 		if (typeNode == Tab.noObj) {
-			report_error("Nije pronadjen tip " + type.getTypeName() + " u tabeli simbola! ", null);
+			report_error("Nije pronadjen tip " + type.getTypeName() + " u tabeli simbola! ", type);
 			type.struct = Tab.noType;
 		} else {
 			if (Obj.Type == typeNode.getKind()) {
@@ -124,6 +127,43 @@ public class SemanticPass extends VisitorAdaptor {
 	
 	public void visit(DesignatorFactor designatorFactor) {
 		//Obj designator = Tab.find(designatorFactor.getDesignator())
+	}
+	
+	public void visit(EnumDecl enumDecl) {
+		report_info("Enum declarations: " + currentEnum.getType().getMembersTable().toString(), enumDecl);
+		enumDecl.obj = currentEnum;
+		currentEnum = null;
+		lastEnumValue=0;
+	}
+	
+	public void visit(EnumName enumName) {
+		currentEnum = Tab.insert(EnumObj, enumName.getEnumName(), new Struct(Struct.Enum));
+		lastEnumValue=0;
+	}
+	
+	public void visit(EnumNoDefault enumNoDefault) {
+		if(null == currentEnum) {
+			report_error("Found an enum outside of enum decl..", enumNoDefault);
+		}
+		enumNoDefault.obj = Tab.insert(Obj.Con, enumNoDefault.getId(), Tab.intType);
+		enumNoDefault.obj.setAdr(lastEnumValue++);
+		boolean success = currentEnum.getType().getMembersTable().insertKey(enumNoDefault.obj);
+		if(!success) {
+			report_error("Name conflict: there's an enumeration with the same name", enumNoDefault);
+		}
+	}
+	
+	public void visit(EnumDefault enumDefault) {
+		if(null == currentEnum) {
+			report_error("Found an enum outside of enum decl..", enumDefault);
+		}
+		enumDefault.obj = Tab.insert(Obj.Con, enumDefault.getId(), Tab.intType);
+		enumDefault.obj.setAdr(enumDefault.getVal());
+		lastEnumValue = enumDefault.getVal();
+		boolean success = currentEnum.getType().getMembersTable().insertKey(enumDefault.obj);
+		if(!success) {
+			report_error("Name conflict: there's an enumeration with the same name", enumDefault);
+		}
 	}
 
 	public boolean passed() {
