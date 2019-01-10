@@ -87,14 +87,12 @@ nonterminal ActualPars ActualPars;
 nonterminal ActualParamList ActualParamList;
 
 nonterminal DesignatorStatement DesignatorStatement;
-nonterminal TermList TermList;
-nonterminal FactorList FactorList;
 nonterminal EnumDeclList EnumDeclList;
 
 
 nonterminal rs.etf.pp1.symboltable.concepts.Obj ProgName, Program, MethodDecl, MethodTypeName, Designator, Access;
 nonterminal rs.etf.pp1.symboltable.concepts.Obj EnumDecl, EnumName, Enumerations, Enumeration;
-nonterminal rs.etf.pp1.symboltable.concepts.Struct Type, Term, Factor, Expr;
+nonterminal rs.etf.pp1.symboltable.concepts.Struct Type, Term, Factor, Expr, TermList, FactorList;
 
 
 Program ::= (Program) PROG ProgName:p VarDeclList:V1 EnumDeclList:E2 LBRACE MethodDeclList:M3 RBRACE {: RESULT=new Program(p, V1, E2, M3); RESULT.setLine(pleft); :};
@@ -175,15 +173,15 @@ DesignatorStatement ::= (Assignment) Designator:dest EQUAL Expr:e {: RESULT=new 
 						; 
 
 			
-Expr ::= (ArithmeticExpr) TermList:T1 {: RESULT=new ArithmeticExpr(T1); RESULT.setLine(T1left); :}
+Expr ::= (ArithmeticExpr) TermList:termList {: RESULT=new ArithmeticExpr(termList); RESULT.setLine(termListleft); :}
 		 ;
 
-TermList ::= (AddopExpr) TermList:T1 Addop:A2 Term:T3 {: RESULT=new AddopExpr(T1, A2, T3); RESULT.setLine(T1left); :}
+TermList ::= (AddopExpr) TermList:termList Addop:A1 Term:term {: RESULT=new AddopExpr(termList, A1, term); RESULT.setLine(termListleft); :}
 			|
-			(SingleTermExpr) Term:T1 {: RESULT=new SingleTermExpr(T1); RESULT.setLine(T1left); :}
+			(SingleTermExpr) Term:term {: RESULT=new SingleTermExpr(term); RESULT.setLine(termleft); :}
 			;
 
-Term ::= (Term) FactorList:F1 {: RESULT=new Term(F1); RESULT.setLine(F1left); :};
+Term ::= (Term) FactorList:factorList {: RESULT=new Term(factorList); RESULT.setLine(factorListleft); :};
 
 FactorList ::= (MulopExpr) FactorList:F1 Mulop:M2 Factor:F3 {: RESULT=new MulopExpr(F1, M2, F3); RESULT.setLine(F1left); :}
 				|

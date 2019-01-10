@@ -77,13 +77,13 @@ nonterminal VarDeclList, MethodDeclList, VarDecl;
 nonterminal FormPars, StatementList, FormalParamList, FormalParamDecl, Statement;
 nonterminal Addop, Mulop, ActualPars, ActualParamList;
 
-nonterminal DesignatorStatement, TermList, FactorList;
+nonterminal DesignatorStatement;
 nonterminal EnumDeclList;
 
 
 nonterminal rs.etf.pp1.symboltable.concepts.Obj ProgName, Program, MethodDecl, MethodTypeName, Designator, Access;
 nonterminal rs.etf.pp1.symboltable.concepts.Obj EnumDecl, EnumName, Enumerations, Enumeration;
-nonterminal rs.etf.pp1.symboltable.concepts.Struct Type, Term, Factor, Expr;
+nonterminal rs.etf.pp1.symboltable.concepts.Struct Type, Term, Factor, Expr, TermList, FactorList;
 
 
 Program ::= (Program) PROG ProgName:p VarDeclList EnumDeclList LBRACE MethodDeclList RBRACE;
@@ -164,15 +164,15 @@ DesignatorStatement ::= (Assignment) Designator:dest EQUAL Expr:e
 						; 
 
 			
-Expr ::= (ArithmeticExpr) TermList
+Expr ::= (ArithmeticExpr) TermList:termList
 		 ;
 
-TermList ::= (AddopExpr) TermList Addop Term
+TermList ::= (AddopExpr) TermList:termList Addop Term:term
 			|
-			(SingleTermExpr) Term
+			(SingleTermExpr) Term:term
 			;
 
-Term ::= (Term) FactorList;
+Term ::= (Term) FactorList:factorList;
 
 FactorList ::= (MulopExpr) FactorList Mulop Factor
 				|

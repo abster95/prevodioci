@@ -67,13 +67,13 @@ public class SemanticPass extends VisitorAdaptor {
 	public void visit(Type type) {
 		Obj typeNode = Tab.find(type.getTypeName());
 		if (typeNode == Tab.noObj) {
-			report_error("Nije pronadjen tip " + type.getTypeName() + " u tabeli simbola! ", type);
+			report_error("ERROR: Type " + type.getTypeName() + " not present in symbol table ", type);
 			type.struct = Tab.noType;
 		} else {
 			if (Obj.Type == typeNode.getKind()) {
 				type.struct = typeNode.getType();
 			} else {
-				report_error("Greska: Ime " + type.getTypeName() + " ne predstavlja tip!", type);
+				report_error("ERROR: Name " + type.getTypeName() + " is not a type!", type);
 				type.struct = Tab.noType;
 			}
 		}
@@ -83,13 +83,13 @@ public class SemanticPass extends VisitorAdaptor {
 		currentMethod = Tab.insert(Obj.Meth, methodTypeName.getMethName(), methodTypeName.getType().struct);
 		methodTypeName.obj = currentMethod;
 		Tab.openScope();
-		report_info("Obradjuje se funkcija " + methodTypeName.getMethName(), methodTypeName);
+		report_info("INFO: Processing function " + methodTypeName.getMethName(), methodTypeName);
 	}
 
 	public void visit(MethodDecl methodDecl) {
 		if (!returnFound && currentMethod.getType() != Tab.noType) {
-			report_error("Semanticka greska na liniji " + methodDecl.getLine() + ": funkcija " + currentMethod.getName()
-					+ " nema return iskaz!", null);
+			report_error("ERROR: Semantic error : function " + currentMethod.getName()
+					+ " doesn't have return statement!", methodDecl);
 		}
 		Tab.chainLocalSymbols(currentMethod);
 		Tab.closeScope();
@@ -101,8 +101,7 @@ public class SemanticPass extends VisitorAdaptor {
 	public void visit(NamedDesignator designator) {
 		Obj obj = Tab.find(designator.getName());
 		if (obj == Tab.noObj) {
-			report_error("Greska na liniji " + designator.getLine() + " : ime " + designator.getName()
-					+ " nije deklarisano! ", null);
+			report_error("ERROR: Undeclared name " + designator.getName(), designator);
 		}
 		designator.obj = obj;
 	}
@@ -111,23 +110,11 @@ public class SemanticPass extends VisitorAdaptor {
 		returnFound = true;
 		Struct currMethType = currentMethod.getType();
 		if (!currMethType.compatibleWith(returnExpr.getExpr().struct)) {
-			report_error("Greska na liniji " + returnExpr.getLine() + " : "
-					+ "tip izraza u return naredbi ne slaze se sa tipom povratne vrednosti funkcije "
+			report_error("ERROR: Return type not compatible with function "
 					+ currentMethod.getName(), null);
 		}
 	}
 	
-	public void visit(NumFactor numFactor) {
-		numFactor.struct = Tab.intType;
-	}
-	
-	public void visit(CharFactor charFactor) {
-		charFactor.struct = Tab.charType;
-	}
-	
-	public void visit(DesignatorFactor designatorFactor) {
-		//Obj designator = Tab.find(designatorFactor.getDesignator())
-	}
 	
 	public void visit(EnumDecl enumDecl) {
 		report_info("Enum declarations: " + currentEnum.getType().getMembersTable().toString(), enumDecl);
@@ -165,6 +152,153 @@ public class SemanticPass extends VisitorAdaptor {
 			report_error("Name conflict: there's an enumeration with the same name", enumDefault);
 		}
 	}
+	
+	public void visit(ArithmeticExpr expr) {
+		expr.struct = expr.getTermList().struct;
+	}
+	
+	public void visit(SingleTermExpr expr) {
+		expr.struct = expr.getTerm().struct;
+	}
+	
+	public void visit(Term t) {
+		t.struct = t.getFactorList().struct;
+	}
+	
+	public void visit(AddopExpr expr) {
+		TermList tl = expr.getTermList();
+		Term t = expr.getTerm();
+		// If it's an addop we need all terms to be ints
+		boolean areInts = true;
+		if(null != tl) {
+			areInts = areInts && (tl.struct == Tab.intType);
+		}
+		if(null != t) {
+			areInts = areInts && (t.struct == Tab.intType);
+		}
+		
+		if(areInts) {
+			expr.struct = t.struct;
+			report_info("Found an addop expression.", expr);
+		} else {
+			expr.struct = Tab.noType;
+			report_error("ERROR: Using an addop expression on non-int types", expr);
+		}
+	}
+	
+	public void visit(FuncCallFactor factor) {
+		Designator functionDesignator = factor.getDesignator();
+		if(!(functionDesignator instanceof NamedDesignator)) {
+			report_error("ERROR: Only global functions supported for now!", factor);
+			factor.struct = Tab.noType;
+			return;
+		}
+		NamedDesignator namedDesignator = (NamedDesignator) functionDesignator;
+		Obj funcObj = Tab.find(namedDesignator.getName());
+		if(null == funcObj ||  Tab.noObj == funcObj) {
+			report_error("ERROR: Trying to call an undeclared function!", factor);
+			factor.struct = Tab.noType;
+			return;
+		}
+		if(funcObj.getKind() != Obj.Meth) {
+			report_error("ERROR: Name " + namedDesignator.getName() + "used as a function call, but it's not a function", factor);
+			factor.struct = Tab.noType;
+			return;
+		}
+		factor.struct = funcObj.getType();
+	}
+	
+	public void visit(ParenthesisExpr expr) {
+		expr.struct = expr.getExpr().struct;
+	}
+	
+	public void visit(NegatedFactor neg) {
+		if(Tab.intType != neg.getFactor().struct) {
+			report_error("ERROR: Trying to negate a non int factor!", neg);
+			neg.struct = Tab.noType;
+			return;
+		}
+		neg.struct = Tab.intType;
+	}
+	
+	public void visit(SingleFactor factor) {
+		factor.struct = factor.getFactor().struct;
+	}
+	
+	public void visit(MulopExpr expr) {
+		FactorList fl = expr.getFactorList();
+		Factor f = expr.getFactor();
+		// If it's an mulop we need all factors to be ints
+		boolean areInts = true;
+		if(null != fl) {
+			areInts = areInts && (fl.struct == Tab.intType);
+		}
+		if(null != f) {
+			areInts = areInts && (f.struct == Tab.intType);
+		}
+		
+		if(areInts) {
+			expr.struct = f.struct;
+			report_info("Found a mulop expression.", expr);
+		} else {
+			expr.struct = Tab.noType;
+			report_error("ERROR: Using mulop expression on non-int types", expr);
+		}
+	}
+	
+	public void visit(NumFactor numFactor) {
+		numFactor.struct = Tab.intType;
+	}
+	
+	public void visit(CharFactor charFactor) {
+		charFactor.struct = Tab.charType;
+	}
+	
+	public void visit(DesignatorFactor designatorFactor) {
+		Designator designator = designatorFactor.getDesignator();
+		if(designator instanceof NamedDesignator) {
+			NamedDesignator namedDesignator = (NamedDesignator) designator;
+			Obj varObj = Tab.find(namedDesignator.getName());
+			if(null == varObj || Tab.noObj == varObj) {
+				report_error("ERROR: Using undeclared variable '" + namedDesignator.getName() +"' as a factor", designatorFactor);
+				designatorFactor.struct = Tab.noType;
+				return;
+			}
+			if(Obj.Var != varObj.getKind()) {
+				report_error("ERROR: Name '" + namedDesignator.getName() +"' used as a variable, but it's not of that kind.", designatorFactor);
+				designatorFactor.struct = Tab.noType;
+				return;
+			}
+			designatorFactor.struct = varObj.getType();
+		} else if (designator instanceof AccessField) {
+			// Only enum access currently supported
+			AccessField accessField = (AccessField) designator;
+			Obj enumObj = Tab.find(accessField.getVarName());
+			if(null == enumObj || Tab.noObj == enumObj) {
+				report_error("ERROR: Using undeclared enumeration '" + accessField.getVarName() +"' as a factor", designatorFactor);
+				designatorFactor.struct = Tab.noType;
+				return;
+			}
+			if(EnumObj != enumObj.getKind()) {
+				report_error("ERROR: Name '" + accessField.getVarName() +"' used as an enum, but it's not of that kind.", designatorFactor);
+				designatorFactor.struct = Tab.noType;
+				return;
+			}
+			Obj constantObj = Tab.find(accessField.getField());
+			if(null == constantObj || Tab.noObj == constantObj) {
+				report_error("ERROR: Constant '" + accessField.getVarName() +"' is not part of '" + accessField.getVarName() + "' enumeration!", designatorFactor);
+				designatorFactor.struct = Tab.noType;
+				return;
+			}
+			designatorFactor.struct = constantObj.getType();
+		} else {
+			//FIXME
+			AccessArray arrayAccess = (AccessArray) designator;
+			report_error("Array access not yet supported", designatorFactor);
+			designatorFactor.struct = Tab.noType;
+		}
+	}
+	
 
 	public boolean passed() {
 		return !errorDetected;

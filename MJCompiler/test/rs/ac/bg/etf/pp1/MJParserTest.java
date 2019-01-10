@@ -52,8 +52,8 @@ public class MJParserTest {
 //
 //			log.info(" Deklarisanih promenljivih ima = " + v.varDeclCount);
 //			
-//			log.info("===================================");
-//			Tab.dump();
+			log.info("===================================");
+			Tab.dump();
 //			
 //			if(!p.errorDetected && v.passed()){
 //				log.info("Parsiranje uspesno zavrseno!");
