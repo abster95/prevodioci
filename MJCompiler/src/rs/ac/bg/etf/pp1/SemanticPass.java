@@ -299,6 +299,11 @@ public class SemanticPass extends VisitorAdaptor {
 		}
 	}
 	
+	public void visit(OperatorNew operator) {
+		report_error("Not supported: only built in types and arrays supported", operator);
+		operator.struct = Tab.noType;
+	}
+	
 
 	public boolean passed() {
 		return !errorDetected;
