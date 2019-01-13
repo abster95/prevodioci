@@ -182,7 +182,7 @@ public class SemanticPass extends VisitorAdaptor {
 		returnFound = true;
 		Struct currMethType = currentMethod.getType();
 		if (!currMethType.compatibleWith(returnExpr.getExpr().struct)) {
-			report_error("ERROR: Return type not compatible with function " + currentMethod.getName(), null);
+			report_error("ERROR: Return type not compatible with function " + currentMethod.getName(), returnExpr);
 		}
 	}
 
@@ -331,7 +331,7 @@ public class SemanticPass extends VisitorAdaptor {
 
 	public void visit(DesignatorFactor designatorFactor) {
 		Designator designator = designatorFactor.getDesignator();
-		if (designator instanceof NamedDesignator) {
+		if (designator.getClass() == NamedDesignator.class) {
 			NamedDesignator namedDesignator = (NamedDesignator) designator;
 			Obj varObj = namedDesignator.obj;
 			if (Obj.Var != varObj.getKind()) {
@@ -341,7 +341,7 @@ public class SemanticPass extends VisitorAdaptor {
 				return;
 			}
 			designatorFactor.struct = varObj.getType();
-		} else if (designator instanceof AccessField) {
+		} else if (designator.getClass() == AccessField.class) {
 			// Only enum access currently supported
 			AccessField accessField = (AccessField) designator;
 			Obj constantObj = Tab.find(accessField.getField());
@@ -373,16 +373,25 @@ public class SemanticPass extends VisitorAdaptor {
 	}
 	
 	public void visit(Assignment assignment) {
-		// Use this format instead of instanceof?
 		if(assignment.getDesignator().getClass() == AccessField.class) {
 			// We currently don't support fields so this is ok
 			report_error("Can't assign values to enums!", assignment);
-			return;
 		}
-		if(assignment.getDesignator().getClass() == AccessArray.class) {
+		else if(assignment.getDesignator().getClass() == AccessArray.class) {
 			AccessArray accessArray = (AccessArray) assignment.getDesignator();
-			
+			if(!accessArray.obj.getType().compatibleWith(assignment.getExpr().struct)) {
+				report_error("Expression is not compatible with array type!", assignment);
+			}
 		}
+		else {
+			NamedDesignator named = (NamedDesignator) assignment.getDesignator();
+			if(named.obj.getKind() != Obj.Var) {
+				report_error("Trying to assign expression to something that isn't a variable: '" + named.getName() +"'", assignment);
+			} else if (!named.obj.getType().compatibleWith(assignment.getExpr().struct)) {
+				report_error("Incompatible types for variable '" + named.getName() + "' and the expression", assignment);
+			}
+		}
+		
 	}
 
 	public boolean passed() {
