@@ -1,6 +1,6 @@
 program MJProgram
 	int x; int y;
-	char[] array;
+	char[] charArray;
 	enum AbiBabi {JEBANJE, TRPANJE, ZABIJANJE, U_GUZU=11}
 {
 	int k () int c; {
@@ -12,17 +12,17 @@ program MJProgram
 		d = 'd';
 	}
 	
-		int main() {
-			
-			print(1);
-			
-			x = y + 5 + 3 ;
-			
-			print(2);
-			
-			k();
-			a = x.y + new int[20];
-			return AbiBabi.JEBANJE;
-		}
+	int main() int[] intArray; int result; {
+		
+		print(1);
+		
+		x = y + 5 + 3 ;
+		
+		print(2);
+		
+		k();
+		result = charArray[AbiBabi.TRPANJE];
+		return AbiBabi.JEBANJE;
+	}
 	
 }

@@ -44,16 +44,16 @@ public class SemanticPass extends VisitorAdaptor {
 					varDecl);
 			return;
 		}
-		if(Tab.noType == varDecl.getType().struct) {
-			report_error("ERROR: It seems like you're trying to declare a variable of type 'void' for variable '" + varDecl.getVarName()
-			+ "'. Allowed  types for variables are 'int' and 'char'.", varDecl);
+		if (Tab.noType == varDecl.getType().struct) {
+			report_error("ERROR: It seems like you're trying to declare a variable of type 'void' for variable '"
+					+ varDecl.getVarName() + "'. Allowed  types for variables are 'int' and 'char'.", varDecl);
 			return;
 		}
 		varDeclCount++;
 		report_info("Variable declaration: " + varDecl.getVarName(), varDecl);
 		Obj varNode = Tab.insert(Obj.Var, varDecl.getVarName(), varDecl.getType().struct);
 	}
-	
+
 	public void visit(VarArrayDecl varDecl) {
 		Obj existing = Tab.find(varDecl.getVarName());
 		if (existing != Tab.noObj) {
@@ -61,9 +61,9 @@ public class SemanticPass extends VisitorAdaptor {
 					varDecl);
 			return;
 		}
-		if(Tab.noType == varDecl.getType().struct) {
-			report_error("ERROR: It seems like you're trying to declare an array of type 'void' for variable '" + varDecl.getVarName()
-			+ "'. Allowed  types for arrays are 'int' and 'char'.", varDecl);
+		if (Tab.noType == varDecl.getType().struct) {
+			report_error("ERROR: It seems like you're trying to declare an array of type 'void' for variable '"
+					+ varDecl.getVarName() + "'. Allowed  types for arrays are 'int' and 'char'.", varDecl);
 			return;
 		}
 		varDeclCount++;
@@ -100,7 +100,7 @@ public class SemanticPass extends VisitorAdaptor {
 			}
 		}
 	}
-	
+
 	public void visit(VoidType type) {
 		type.struct = Tab.noType;
 	}
@@ -114,8 +114,9 @@ public class SemanticPass extends VisitorAdaptor {
 
 	public void visit(MethodDecl methodDecl) {
 		if (!returnFound && currentMethod.getType() != Tab.noType) {
-			report_error("ERROR: Semantic error : function " + currentMethod.getName()
-					+ " doesn't have return statement!", methodDecl);
+			report_error(
+					"ERROR: Semantic error : function " + currentMethod.getName() + " doesn't have return statement!",
+					methodDecl);
 		}
 		Tab.chainLocalSymbols(currentMethod);
 		Tab.closeScope();
@@ -136,74 +137,71 @@ public class SemanticPass extends VisitorAdaptor {
 		returnFound = true;
 		Struct currMethType = currentMethod.getType();
 		if (!currMethType.compatibleWith(returnExpr.getExpr().struct)) {
-			report_error("ERROR: Return type not compatible with function "
-					+ currentMethod.getName(), null);
+			report_error("ERROR: Return type not compatible with function " + currentMethod.getName(), null);
 		}
 	}
-	
-	
+
 	public void visit(EnumDecl enumDecl) {
-		report_info("Enum declarations: " + currentEnum.getType().getMembersTable().toString(), enumDecl);
 		enumDecl.obj = currentEnum;
 		currentEnum = null;
-		lastEnumValue=0;
+		lastEnumValue = 0;
 	}
-	
+
 	public void visit(EnumName enumName) {
 		currentEnum = Tab.insert(EnumObj, enumName.getEnumName(), new Struct(Struct.Enum));
-		lastEnumValue=0;
+		lastEnumValue = 0;
 	}
-	
+
 	public void visit(EnumNoDefault enumNoDefault) {
-		if(null == currentEnum) {
+		if (null == currentEnum) {
 			report_error("Found an enum outside of enum decl..", enumNoDefault);
 		}
 		enumNoDefault.obj = Tab.insert(Obj.Con, enumNoDefault.getId(), Tab.intType);
 		enumNoDefault.obj.setAdr(lastEnumValue++);
 		boolean success = currentEnum.getType().getMembersTable().insertKey(enumNoDefault.obj);
-		if(!success) {
+		if (!success) {
 			report_error("Name conflict: there's an enumeration with the same name", enumNoDefault);
 		}
 	}
-	
+
 	public void visit(EnumDefault enumDefault) {
-		if(null == currentEnum) {
+		if (null == currentEnum) {
 			report_error("Found an enum outside of enum decl..", enumDefault);
 		}
 		enumDefault.obj = Tab.insert(Obj.Con, enumDefault.getId(), Tab.intType);
 		enumDefault.obj.setAdr(enumDefault.getVal());
 		lastEnumValue = enumDefault.getVal();
 		boolean success = currentEnum.getType().getMembersTable().insertKey(enumDefault.obj);
-		if(!success) {
+		if (!success) {
 			report_error("Name conflict: there's an enumeration with the same name", enumDefault);
 		}
 	}
-	
+
 	public void visit(ArithmeticExpr expr) {
 		expr.struct = expr.getTermList().struct;
 	}
-	
+
 	public void visit(SingleTermExpr expr) {
 		expr.struct = expr.getTerm().struct;
 	}
-	
+
 	public void visit(Term t) {
 		t.struct = t.getFactorList().struct;
 	}
-	
+
 	public void visit(AddopExpr expr) {
 		TermList tl = expr.getTermList();
 		Term t = expr.getTerm();
 		// If it's an addop we need all terms to be ints
 		boolean areInts = true;
-		if(null != tl) {
+		if (null != tl) {
 			areInts = areInts && (tl.struct == Tab.intType);
 		}
-		if(null != t) {
+		if (null != t) {
 			areInts = areInts && (t.struct == Tab.intType);
 		}
-		
-		if(areInts) {
+
+		if (areInts) {
 			expr.struct = t.struct;
 			report_info("Found an addop expression.", expr);
 		} else {
@@ -211,59 +209,61 @@ public class SemanticPass extends VisitorAdaptor {
 			report_error("ERROR: Using an addop expression on non-int types", expr);
 		}
 	}
-	
+
 	public void visit(FuncCallFactor factor) {
 		Designator functionDesignator = factor.getDesignator();
-		if(!(functionDesignator instanceof NamedDesignator)) {
+		if (!(functionDesignator instanceof NamedDesignator)) {
 			report_error("ERROR: Only global functions supported for now!", factor);
 			factor.struct = Tab.noType;
 			return;
 		}
 		NamedDesignator namedDesignator = (NamedDesignator) functionDesignator;
 		Obj funcObj = Tab.find(namedDesignator.getName());
-		if(null == funcObj ||  Tab.noObj == funcObj) {
+		if (null == funcObj || Tab.noObj == funcObj) {
 			report_error("ERROR: Trying to call an undeclared function!", factor);
 			factor.struct = Tab.noType;
 			return;
 		}
-		if(funcObj.getKind() != Obj.Meth) {
-			report_error("ERROR: Name " + namedDesignator.getName() + "used as a function call, but it's not a function", factor);
+		if (funcObj.getKind() != Obj.Meth) {
+			report_error(
+					"ERROR: Name " + namedDesignator.getName() + "used as a function call, but it's not a function",
+					factor);
 			factor.struct = Tab.noType;
 			return;
 		}
 		factor.struct = funcObj.getType();
 	}
-	
+
 	public void visit(ParenthesisExpr expr) {
 		expr.struct = expr.getExpr().struct;
 	}
-	
+
 	public void visit(NegatedFactor neg) {
-		if(Tab.intType != neg.getFactor().struct) {
+		if (Tab.intType != neg.getFactor().struct) {
 			report_error("ERROR: Trying to negate a non int factor!", neg);
 			neg.struct = Tab.noType;
 			return;
 		}
 		neg.struct = Tab.intType;
 	}
-	
+
 	public void visit(SingleFactor factor) {
 		factor.struct = factor.getFactor().struct;
 	}
-	
+
 	public void visit(MulopExpr expr) {
 		FactorList fl = expr.getFactorList();
 		Factor f = expr.getFactor();
 		// If it's an mulop we need all factors to be ints
 		boolean areInts = true;
-		if(null != fl) {
+		if (null != fl) {
 			areInts = areInts && (fl.struct == Tab.intType);
 		}
-		if(null != f) {
+		if (null != f) {
 			areInts = areInts && (f.struct == Tab.intType);
 		}
-		
-		if(areInts) {
+
+		if (areInts) {
 			expr.struct = f.struct;
 			report_info("Found a mulop expression.", expr);
 		} else {
@@ -271,27 +271,29 @@ public class SemanticPass extends VisitorAdaptor {
 			report_error("ERROR: Using mulop expression on non-int types", expr);
 		}
 	}
-	
+
 	public void visit(NumFactor numFactor) {
 		numFactor.struct = Tab.intType;
 	}
-	
+
 	public void visit(CharFactor charFactor) {
 		charFactor.struct = Tab.charType;
 	}
-	
+
 	public void visit(DesignatorFactor designatorFactor) {
 		Designator designator = designatorFactor.getDesignator();
-		if(designator instanceof NamedDesignator) {
+		if (designator instanceof NamedDesignator) {
 			NamedDesignator namedDesignator = (NamedDesignator) designator;
 			Obj varObj = Tab.find(namedDesignator.getName());
-			if(null == varObj || Tab.noObj == varObj) {
-				report_error("ERROR: Using undeclared variable '" + namedDesignator.getName() +"' as a factor", designatorFactor);
+			if (null == varObj || Tab.noObj == varObj) {
+				report_error("ERROR: Using undeclared variable '" + namedDesignator.getName() + "' as a factor",
+						designatorFactor);
 				designatorFactor.struct = Tab.noType;
 				return;
 			}
-			if(Obj.Var != varObj.getKind()) {
-				report_error("ERROR: Name '" + namedDesignator.getName() +"' used as a variable, but it's not of that kind.", designatorFactor);
+			if (Obj.Var != varObj.getKind()) {
+				report_error("ERROR: Name '" + namedDesignator.getName()
+						+ "' used as a variable, but it's not of that kind.", designatorFactor);
 				designatorFactor.struct = Tab.noType;
 				return;
 			}
@@ -300,36 +302,53 @@ public class SemanticPass extends VisitorAdaptor {
 			// Only enum access currently supported
 			AccessField accessField = (AccessField) designator;
 			Obj enumObj = Tab.find(accessField.getVarName());
-			if(null == enumObj || Tab.noObj == enumObj) {
-				report_error("ERROR: Using undeclared enumeration '" + accessField.getVarName() +"' as a factor", designatorFactor);
+			if (null == enumObj || Tab.noObj == enumObj) {
+				report_error("ERROR: Using undeclared enumeration '" + accessField.getVarName() + "' as a factor",
+						designatorFactor);
 				designatorFactor.struct = Tab.noType;
 				return;
 			}
-			if(EnumObj != enumObj.getKind()) {
-				report_error("ERROR: Name '" + accessField.getVarName() +"' used as an enum, but it's not of that kind.", designatorFactor);
+			if (EnumObj != enumObj.getKind()) {
+				report_error(
+						"ERROR: Name '" + accessField.getVarName() + "' used as an enum, but it's not of that kind.",
+						designatorFactor);
 				designatorFactor.struct = Tab.noType;
 				return;
 			}
 			Obj constantObj = Tab.find(accessField.getField());
-			if(null == constantObj || Tab.noObj == constantObj) {
-				report_error("ERROR: Constant '" + accessField.getVarName() +"' is not part of '" + accessField.getVarName() + "' enumeration!", designatorFactor);
+			if (null == constantObj || Tab.noObj == constantObj) {
+				report_error("ERROR: Constant '" + accessField.getVarName() + "' is not part of '"
+						+ accessField.getVarName() + "' enumeration!", designatorFactor);
 				designatorFactor.struct = Tab.noType;
 				return;
 			}
 			designatorFactor.struct = constantObj.getType();
 		} else {
-			//FIXME
 			AccessArray arrayAccess = (AccessArray) designator;
-			report_error("Array access not yet supported", designatorFactor);
-			designatorFactor.struct = Tab.noType;
+			Obj arrayObj = Tab.find(arrayAccess.getArrayName());
+			if (Tab.noObj == arrayObj) {
+				report_error("Trying to use undeclared variable '" + arrayAccess.getArrayName() + "' as an array.",
+						designatorFactor);
+				return;
+			}
+			if (Struct.Array != arrayObj.getType().getKind()) {
+				report_error("Trying to use variable '" + arrayAccess.getArrayName()
+						+ "' as an array, but it's type is different", designatorFactor);
+				return;
+			}
+			if (Tab.intType != arrayAccess.getExpr().struct) {
+				report_error("Expression must be of int type when trying to access the array elements!",
+						designatorFactor);
+				return;
+			}
+			designatorFactor.struct = arrayObj.getType().getElemType();
 		}
 	}
-	
+
 	public void visit(OperatorNew operator) {
 		report_error("Not supported: only built in types and arrays supported", operator);
 		operator.struct = Tab.noType;
 	}
-	
 
 	public boolean passed() {
 		return !errorDetected;
