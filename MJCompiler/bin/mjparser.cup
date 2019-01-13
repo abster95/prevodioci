@@ -95,9 +95,13 @@ VarDeclList ::= (VarDeclarations) VarDeclList VarDecl
 			(NoVarDecl) /* epsilon */
 			;
 
-VarDecl ::= (VarDecl) Type:varType IDENT:varName SEMI;
+VarDecl ::= (VarSimpleDecl) Type:varType IDENT:varName SEMI
+			|
+			(VarArrayDecl) Type:varType LBRACKET RBRACKET IDENT:varName SEMI;
 
-Type ::= (Type) IDENT:typeName;
+Type ::= (ExistingType) IDENT:typeName
+		|
+		(VoidType) VOID;
 
 MethodDeclList ::= (MethodDeclarations) MethodDeclList MethodDecl
 				|

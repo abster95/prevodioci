@@ -1,11 +1,16 @@
 program MJProgram
 	int x; int y;
+	char[] array;
 	enum AbiBabi {JEBANJE, TRPANJE, ZABIJANJE, U_GUZU=11}
 {
 	int k () int c; {
 			c = 2;
 			return c+2;
 		}
+		
+	void abiBabi() char d; {
+		d = 'd';
+	}
 	
 		int main() {
 			

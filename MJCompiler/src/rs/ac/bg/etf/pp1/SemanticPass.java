@@ -37,16 +37,38 @@ public class SemanticPass extends VisitorAdaptor {
 		log.info(msg.toString());
 	}
 
-	public void visit(VarDecl varDecl) {
+	public void visit(VarSimpleDecl varDecl) {
 		Obj existing = Tab.find(varDecl.getVarName());
 		if (existing != Tab.noObj) {
-			report_error("Variable with name '" + varDecl.getVarName() + "' already declared in current scope!",
+			report_error("ERROR: Variable with name '" + varDecl.getVarName() + "' already declared in current scope!",
 					varDecl);
+			return;
+		}
+		if(Tab.noType == varDecl.getType().struct) {
+			report_error("ERROR: It seems like you're trying to declare a variable of type 'void' for variable '" + varDecl.getVarName()
+			+ "'. Allowed  types for variables are 'int' and 'char'.", varDecl);
 			return;
 		}
 		varDeclCount++;
 		report_info("Variable declaration: " + varDecl.getVarName(), varDecl);
 		Obj varNode = Tab.insert(Obj.Var, varDecl.getVarName(), varDecl.getType().struct);
+	}
+	
+	public void visit(VarArrayDecl varDecl) {
+		Obj existing = Tab.find(varDecl.getVarName());
+		if (existing != Tab.noObj) {
+			report_error("ERROR: Variable with name '" + varDecl.getVarName() + "' already declared in current scope!",
+					varDecl);
+			return;
+		}
+		if(Tab.noType == varDecl.getType().struct) {
+			report_error("ERROR: It seems like you're trying to declare an array of type 'void' for variable '" + varDecl.getVarName()
+			+ "'. Allowed  types for arrays are 'int' and 'char'.", varDecl);
+			return;
+		}
+		varDeclCount++;
+		report_info("Variable declaration: " + varDecl.getVarName(), varDecl);
+		Tab.insert(Obj.Var, varDecl.getVarName(), new Struct(Struct.Array, varDecl.getType().struct));
 	}
 
 	public void visit(PrintStmt print) {
@@ -64,7 +86,7 @@ public class SemanticPass extends VisitorAdaptor {
 		Tab.closeScope();
 	}
 
-	public void visit(Type type) {
+	public void visit(ExistingType type) {
 		Obj typeNode = Tab.find(type.getTypeName());
 		if (typeNode == Tab.noObj) {
 			report_error("ERROR: Type " + type.getTypeName() + " not present in symbol table ", type);
@@ -77,6 +99,10 @@ public class SemanticPass extends VisitorAdaptor {
 				type.struct = Tab.noType;
 			}
 		}
+	}
+	
+	public void visit(VoidType type) {
+		type.struct = Tab.noType;
 	}
 
 	public void visit(MethodTypeName methodTypeName) {

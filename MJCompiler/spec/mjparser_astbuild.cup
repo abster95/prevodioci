@@ -104,9 +104,13 @@ VarDeclList ::= (VarDeclarations) VarDeclList:V1 VarDecl:V2 {: RESULT=new VarDec
 			(NoVarDecl) {: RESULT=new NoVarDecl(); :} /* epsilon */
 			;
 
-VarDecl ::= (VarDecl) Type:varType IDENT:varName SEMI {: RESULT=new VarDecl(varType, varName); RESULT.setLine(varTypeleft); :};
+VarDecl ::= (VarSimpleDecl) Type:varType IDENT:varName SEMI {: RESULT=new VarSimpleDecl(varType, varName); RESULT.setLine(varTypeleft); :}
+			|
+			(VarArrayDecl) Type:varType LBRACKET RBRACKET IDENT:varName SEMI {: RESULT=new VarArrayDecl(varType, varName); RESULT.setLine(varTypeleft); :};
 
-Type ::= (Type) IDENT:typeName {: RESULT=new Type(typeName); RESULT.setLine(typeNameleft); :};
+Type ::= (ExistingType) IDENT:typeName {: RESULT=new ExistingType(typeName); RESULT.setLine(typeNameleft); :}
+		|
+		(VoidType) VOID {: RESULT=new VoidType(); :};
 
 MethodDeclList ::= (MethodDeclarations) MethodDeclList:M1 MethodDecl:M2 {: RESULT=new MethodDeclarations(M1, M2); RESULT.setLine(M1left); :}
 				|
