@@ -37,6 +37,8 @@ public class SemanticPass extends VisitorAdaptor {
 		log.info(msg.toString());
 	}
 
+	// VARIABLES
+
 	public void visit(VarSimpleDecl varDecl) {
 		Obj existing = Tab.find(varDecl.getVarName());
 		if (existing != Tab.noObj) {
@@ -86,6 +88,8 @@ public class SemanticPass extends VisitorAdaptor {
 		Tab.closeScope();
 	}
 
+	// TYPES
+
 	public void visit(ExistingType type) {
 		Obj typeNode = Tab.find(type.getTypeName());
 		if (typeNode == Tab.noObj) {
@@ -104,6 +108,8 @@ public class SemanticPass extends VisitorAdaptor {
 	public void visit(VoidType type) {
 		type.struct = Tab.noType;
 	}
+
+	// METHODS
 
 	public void visit(MethodTypeName methodTypeName) {
 		currentMethod = Tab.insert(Obj.Meth, methodTypeName.getMethName(), methodTypeName.getType().struct);
@@ -125,12 +131,51 @@ public class SemanticPass extends VisitorAdaptor {
 		currentMethod = null;
 	}
 
+	// DESIGNATORS
+	
 	public void visit(NamedDesignator designator) {
 		Obj obj = Tab.find(designator.getName());
 		if (obj == Tab.noObj) {
 			report_error("ERROR: Undeclared name " + designator.getName(), designator);
 		}
 		designator.obj = obj;
+	}
+	
+	public void visit(AccessArray designator) {
+		Obj arrayObj = Tab.find(designator.getArrayName());
+		if (Tab.noObj == arrayObj) {
+			report_error("Trying to use undeclared variable '" + designator.getArrayName() + "' as an array.",
+					designator);
+		}
+		if (Struct.Array != arrayObj.getType().getKind()) {
+			report_error("Trying to use variable '" + designator.getArrayName()
+					+ "' as an array, but it's type is different", designator);
+		}
+		if (Tab.intType != designator.getExpr().struct) {
+			report_error("Expression must be of int type when trying to access the array elements!",
+					designator);
+		}
+
+		designator.obj = arrayObj;
+	}
+	
+	public void visit(AccessField accessField) {
+		Obj enumObj = Tab.find(accessField.getVarName());
+		if (null == enumObj || Tab.noObj == enumObj) {
+			report_error("ERROR: Using undeclared enumeration '" + accessField.getVarName() + "'",
+					accessField);
+		}
+		if (EnumObj != enumObj.getKind()) {
+			report_error(
+					"ERROR: Name '" + accessField.getVarName() + "' used as an enum, but it's not of that kind.",
+					accessField);
+		}
+		Obj constantObj = Tab.find(accessField.getField());
+		if (null == constantObj || Tab.noObj == constantObj) {
+			report_error("ERROR: Constant '" + accessField.getField() + "' is not part of '"
+					+ accessField.getVarName() + "' enumeration!", accessField);
+		}
+		accessField.obj = enumObj;
 	}
 
 	public void visit(ReturnExpr returnExpr) {
@@ -140,6 +185,8 @@ public class SemanticPass extends VisitorAdaptor {
 			report_error("ERROR: Return type not compatible with function " + currentMethod.getName(), null);
 		}
 	}
+
+	// ENUMERATIONS
 
 	public void visit(EnumDecl enumDecl) {
 		enumDecl.obj = currentEnum;
@@ -176,6 +223,8 @@ public class SemanticPass extends VisitorAdaptor {
 			report_error("Name conflict: there's an enumeration with the same name", enumDefault);
 		}
 	}
+
+	// EXPRESSIONS
 
 	public void visit(ArithmeticExpr expr) {
 		expr.struct = expr.getTermList().struct;
@@ -284,13 +333,7 @@ public class SemanticPass extends VisitorAdaptor {
 		Designator designator = designatorFactor.getDesignator();
 		if (designator instanceof NamedDesignator) {
 			NamedDesignator namedDesignator = (NamedDesignator) designator;
-			Obj varObj = Tab.find(namedDesignator.getName());
-			if (null == varObj || Tab.noObj == varObj) {
-				report_error("ERROR: Using undeclared variable '" + namedDesignator.getName() + "' as a factor",
-						designatorFactor);
-				designatorFactor.struct = Tab.noType;
-				return;
-			}
+			Obj varObj = namedDesignator.obj;
 			if (Obj.Var != varObj.getKind()) {
 				report_error("ERROR: Name '" + namedDesignator.getName()
 						+ "' used as a variable, but it's not of that kind.", designatorFactor);
@@ -301,53 +344,45 @@ public class SemanticPass extends VisitorAdaptor {
 		} else if (designator instanceof AccessField) {
 			// Only enum access currently supported
 			AccessField accessField = (AccessField) designator;
-			Obj enumObj = Tab.find(accessField.getVarName());
-			if (null == enumObj || Tab.noObj == enumObj) {
-				report_error("ERROR: Using undeclared enumeration '" + accessField.getVarName() + "' as a factor",
-						designatorFactor);
-				designatorFactor.struct = Tab.noType;
-				return;
-			}
-			if (EnumObj != enumObj.getKind()) {
-				report_error(
-						"ERROR: Name '" + accessField.getVarName() + "' used as an enum, but it's not of that kind.",
-						designatorFactor);
-				designatorFactor.struct = Tab.noType;
-				return;
-			}
 			Obj constantObj = Tab.find(accessField.getField());
-			if (null == constantObj || Tab.noObj == constantObj) {
-				report_error("ERROR: Constant '" + accessField.getVarName() + "' is not part of '"
-						+ accessField.getVarName() + "' enumeration!", designatorFactor);
-				designatorFactor.struct = Tab.noType;
-				return;
-			}
 			designatorFactor.struct = constantObj.getType();
 		} else {
 			AccessArray arrayAccess = (AccessArray) designator;
-			Obj arrayObj = Tab.find(arrayAccess.getArrayName());
-			if (Tab.noObj == arrayObj) {
-				report_error("Trying to use undeclared variable '" + arrayAccess.getArrayName() + "' as an array.",
-						designatorFactor);
-				return;
-			}
-			if (Struct.Array != arrayObj.getType().getKind()) {
-				report_error("Trying to use variable '" + arrayAccess.getArrayName()
-						+ "' as an array, but it's type is different", designatorFactor);
-				return;
-			}
-			if (Tab.intType != arrayAccess.getExpr().struct) {
-				report_error("Expression must be of int type when trying to access the array elements!",
-						designatorFactor);
-				return;
-			}
-			designatorFactor.struct = arrayObj.getType().getElemType();
+			designatorFactor.struct = arrayAccess.obj.getType().getElemType();
 		}
 	}
 
 	public void visit(OperatorNew operator) {
 		report_error("Not supported: only built in types and arrays supported", operator);
 		operator.struct = Tab.noType;
+	}
+
+	public void visit(OperatorNewArray operator) {
+		if (operator.getExpr().struct != Tab.intType) {
+			report_error("When instancing an array, the number of elements must be an integer", operator);
+			return;
+		}
+		if (Tab.noType == operator.getType().struct) {
+			report_error(
+					"Seems like you're trying to create an instance of void array. Supported types are int and char",
+					operator);
+			return;
+		}
+		report_info("Allocating array", operator);
+		operator.struct = new Struct(Struct.Array, operator.getType().struct);
+	}
+	
+	public void visit(Assignment assignment) {
+		// Use this format instead of instanceof?
+		if(assignment.getDesignator().getClass() == AccessField.class) {
+			// We currently don't support fields so this is ok
+			report_error("Can't assign values to enums!", assignment);
+			return;
+		}
+		if(assignment.getDesignator().getClass() == AccessArray.class) {
+			AccessArray accessArray = (AccessArray) assignment.getDesignator();
+			
+		}
 	}
 
 	public boolean passed() {

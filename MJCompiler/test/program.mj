@@ -16,13 +16,14 @@ program MJProgram
 		
 		print(1);
 		
-		x = y + 5 + 3 ;
+		x = y + 5 + 3 + AbiBabi.JEBANJE;
 		
 		print(2);
 		
 		k();
 		result = charArray[AbiBabi.TRPANJE];
-		return AbiBabi.JEBANJE;
+		AbiBabi.TRPANJE = 3;
+		return intArray['3'];
 	}
 	
 }
