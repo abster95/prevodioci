@@ -2,13 +2,18 @@ program MJProgram
 	int x; int y;
 	char[] charArray;
 	enum AbiBabi {JEBANJE, TRPANJE, ZABIJANJE, U_GUZU=11}
-{	
+{
+	int alwaysNumber5() {
+		return 5;
+	}	
+
 	int main() int[] intArray; int result; {
 		y = 2 + 3;
 		
 		x = y*2;
-		
-		print(x);
+		x++;
+		print(-x + alwaysNumber5());
+		print('a');
 		return 1;
 	}
 }

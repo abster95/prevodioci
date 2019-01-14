@@ -393,6 +393,44 @@ public class SemanticPass extends VisitorAdaptor {
 		}
 		
 	}
+	
+	public void visit(Increment increment) {
+		if(increment.getDesignator().getClass() == AccessField.class) {
+			// We currently don't support fields so this is ok
+			report_error("Can't increment enums!", increment);
+		} else if(increment.getDesignator().getClass() == AccessArray.class) {
+			AccessArray accessArray = (AccessArray) increment.getDesignator();
+			if(accessArray.obj.getType() != Tab.intType) {
+				report_error("Can't increment non-int array", increment);
+			}
+		} else {
+			NamedDesignator named = (NamedDesignator) increment.getDesignator();
+			if(named.obj.getKind() != Obj.Var) {
+				report_error("Trying to increment something that isn't a variable: '" + named.getName() +"'", increment);
+			} else if (named.obj.getType() != Tab.intType) {
+				report_error("Incompatible types for variable '" + named.getName() + "'. Can only increment integers", increment);
+			}
+		}
+	}
+	
+	public void visit(Decrement decrement) {
+		if(decrement.getDesignator().getClass() == AccessField.class) {
+			// We currently don't support fields so this is ok
+			report_error("Can't increment enums!", decrement);
+		} else if(decrement.getDesignator().getClass() == AccessArray.class) {
+			AccessArray accessArray = (AccessArray) decrement.getDesignator();
+			if(accessArray.obj.getType() != Tab.intType) {
+				report_error("Can't increment non-int array", decrement);
+			}
+		} else {
+			NamedDesignator named = (NamedDesignator) decrement.getDesignator();
+			if(named.obj.getKind() != Obj.Var) {
+				report_error("Trying to increment something that isn't a variable: '" + named.getName() +"'", decrement);
+			} else if (named.obj.getType() != Tab.intType) {
+				report_error("Incompatible types for variable '" + named.getName() + "'. Can only increment integers", decrement);
+			}
+		}
+	}
 
 	public boolean passed() {
 		return !errorDetected;
