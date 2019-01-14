@@ -75,6 +75,25 @@ public class SemanticPass extends VisitorAdaptor {
 
 	public void visit(PrintStmt print) {
 		printCallCount++;
+		if(print.getExpr().struct != Tab.intType && print.getExpr().struct != Tab.charType) {
+			report_error("Can only print chars and ints", print);
+		}
+	}
+	
+	public void visit(PrintWidthStmt print) {
+		printCallCount++;
+		if(print.getExpr().struct != Tab.intType && print.getExpr().struct != Tab.charType) {
+			report_error("Can only print chars and ints", print);
+		}
+	}
+	
+	public void visit(ReadStmt read) {
+		if(read.getDesignator().obj.getKind() != Obj.Var && read.getDesignator().obj.getKind() != Obj.Elem) {
+			report_error("Can only read into var or elem", read);
+		}
+		if(read.getDesignator().obj.getType() != Tab.intType && read.getDesignator().obj.getType() != Tab.charType) {
+			report_error("Can only read ints or chars", read);
+		}
 	}
 
 	public void visit(ProgName progName) {
@@ -142,7 +161,7 @@ public class SemanticPass extends VisitorAdaptor {
 	}
 	
 	public void visit(AccessArray designator) {
-		Obj arrayObj = Tab.find(designator.getArrayName());
+		Obj arrayObj = Tab.find(designator.getArrayName().getI1());
 		if (Tab.noObj == arrayObj) {
 			report_error("Trying to use undeclared variable '" + designator.getArrayName() + "' as an array.",
 					designator);
@@ -155,7 +174,6 @@ public class SemanticPass extends VisitorAdaptor {
 			report_error("Expression must be of int type when trying to access the array elements!",
 					designator);
 		}
-
 		designator.obj = new Obj(Obj.Elem, "elem", arrayObj.getType().getElemType());
 	}
 	
@@ -176,6 +194,10 @@ public class SemanticPass extends VisitorAdaptor {
 					+ accessField.getVarName() + "' enumeration!", accessField);
 		}
 		accessField.obj = enumObj;
+	}
+	
+	public void visit(ArrayName arrayName) {
+		arrayName.obj =Tab.find(arrayName.getI1());
 	}
 
 	public void visit(ReturnExpr returnExpr) {
@@ -348,7 +370,7 @@ public class SemanticPass extends VisitorAdaptor {
 			designatorFactor.struct = constantObj.getType();
 		} else {
 			AccessArray arrayAccess = (AccessArray) designator;
-			designatorFactor.struct = arrayAccess.obj.getType().getElemType();
+			designatorFactor.struct = arrayAccess.obj.getType();
 		}
 	}
 

@@ -81,7 +81,7 @@ nonterminal DesignatorStatement;
 nonterminal EnumDeclList;
 
 
-nonterminal rs.etf.pp1.symboltable.concepts.Obj ProgName, Program, MethodDecl, MethodTypeName, Designator;
+nonterminal rs.etf.pp1.symboltable.concepts.Obj ProgName, Program, MethodDecl, MethodTypeName, Designator, ArrayName;
 nonterminal rs.etf.pp1.symboltable.concepts.Obj EnumDecl, EnumName, Enumerations, Enumeration;
 nonterminal rs.etf.pp1.symboltable.concepts.Struct Type, Term, Factor, Expr, TermList, FactorList;
 
@@ -153,6 +153,10 @@ Statement ::= (DesignatorStmt) DesignatorStatement SEMI
 		   |
 		   (PrintStmt) PRINT LPAREN Expr RPAREN SEMI
 		   |
+		   (PrintWidthStmt) PRINT LPAREN Expr COMMA NUMBER RPAREN SEMI
+		   |
+		   (ReadStmt) READ LPAREN Designator RPAREN SEMI
+		   |
 		   (ReturnExpr) RETURN Expr:t SEMI
 		   |
 		   (ReturnNoExpr) RETURN SEMI
@@ -217,8 +221,10 @@ Designator ::= (NamedDesignator) IDENT:name
 				|
 				(AccessField) IDENT:varName DOT IDENT:field
 				|
-				(AccessArray) IDENT:arrayName LBRACKET Expr RBRACKET
+				(AccessArray) ArrayName:arrayName LBRACKET Expr RBRACKET
 ;
+
+ArrayName ::= (ArrayName) IDENT;
 
 
 Addop ::= (AddopPlus) PLUS | (AddopMinus) MINUS;
