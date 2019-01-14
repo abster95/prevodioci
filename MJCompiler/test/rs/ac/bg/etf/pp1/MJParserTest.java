@@ -60,17 +60,20 @@ public class MJParserTest {
 			if(!p.errorDetected && v.passed()){
 				log.info("Parsing completed successfully");
 				String filename ="test/program.obj";
-				log.info("Writing obj code to file " + filename);
-				File objFile = new File(filename);
-				if(objFile.exists()) objFile.delete();
 				
+				log.info("Generating code for the program...");
 				CodeGenerator codeGenerator = new CodeGenerator();
 				prog.traverseBottomUp(codeGenerator);
 				Code.dataSize = v.nVars;
 				Code.mainPc = codeGenerator.getMainPc();
+
+				log.info("Writing obj code to file... " + filename);
+				File objFile = new File(filename);
+				if(objFile.exists()) objFile.delete();
 				Code.write(new FileOutputStream(objFile));
+				log.info("Writing completed succesfully!");
 			}else{
-				log.error("Parsiranje NIJE uspesno zavrseno!");
+				log.error("Parsing FAILED!");
 			}
 		} 
 		finally {

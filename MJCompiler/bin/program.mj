@@ -2,28 +2,13 @@ program MJProgram
 	int x; int y;
 	char[] charArray;
 	enum AbiBabi {JEBANJE, TRPANJE, ZABIJANJE, U_GUZU=11}
-{
-	int k () int c; {
-			c = 2;
-			return c+2;
-		}
-		
-	void abiBabi() char d; {
-		d = 'd';
-	}
-	
+{	
 	int main() int[] intArray; int result; {
+		y = 2 + 3;
 		
-		print(1);
+		x = y*2;
 		
-		x = y + 5 + 3 + AbiBabi.JEBANJE;
-		
-		print(2);
-		
-		k();
-		result = charArray[AbiBabi.TRPANJE];
-		AbiBabi.TRPANJE = 3;
-		return intArray['3'];
+		print(x);
+		return 1;
 	}
-	
 }
