@@ -10,8 +10,6 @@ import rs.etf.pp1.symboltable.concepts.Obj;
 public class CodeGenerator extends VisitorAdaptor {
 
 	private int mainPc;
-
-	private Obj index = Tab.insert(Obj.Var, "index", Tab.intType);
 	
 	public int getMainPc() {
 		return mainPc;

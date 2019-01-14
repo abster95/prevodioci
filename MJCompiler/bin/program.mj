@@ -24,7 +24,11 @@ program MJProgram
 		
 		intArray = new int[20];
 		intArray[0]++;
+		intArray[1]--;
+		intArray[3] = 12;
 		print(intArray[0]);
+		print(intArray[1]);
+		print(intArray[3]);
 		return 1;
 	}
 }
