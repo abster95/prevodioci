@@ -156,7 +156,7 @@ public class SemanticPass extends VisitorAdaptor {
 					designator);
 		}
 
-		designator.obj = arrayObj;
+		designator.obj = new Obj(Obj.Elem, "elem", arrayObj.getType().getElemType());
 	}
 	
 	public void visit(AccessField accessField) {
@@ -360,12 +360,14 @@ public class SemanticPass extends VisitorAdaptor {
 	public void visit(OperatorNewArray operator) {
 		if (operator.getExpr().struct != Tab.intType) {
 			report_error("When instancing an array, the number of elements must be an integer", operator);
+			operator.struct = Tab.noType;
 			return;
 		}
 		if (Tab.noType == operator.getType().struct) {
 			report_error(
 					"Seems like you're trying to create an instance of void array. Supported types are int and char",
 					operator);
+			operator.struct = Tab.noType;
 			return;
 		}
 		report_info("Allocating array", operator);
