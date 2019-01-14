@@ -23,6 +23,7 @@ program MJProgram
 	int main() int[] intArray; int result; {
 		
 		intArray = new int[20];
+		intArray[0]++;
 		print(intArray[0]);
 		return 1;
 	}

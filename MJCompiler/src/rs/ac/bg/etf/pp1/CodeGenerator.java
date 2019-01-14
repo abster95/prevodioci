@@ -167,9 +167,9 @@ public class CodeGenerator extends VisitorAdaptor {
 	}
 	
 	public void visit(Increment inc) {
-//		if(inc.getDesignator().obj.getKind() == Obj.Elem) {
-//			Code.put(Code.dup2);
-//		}
+		if(inc.getDesignator().obj.getKind() == Obj.Elem) {
+			Code.put(Code.dup2);
+		}
 		Code.load(inc.getDesignator().obj);
 		Code.loadConst(1);
 		Code.put(Code.add);
@@ -177,9 +177,9 @@ public class CodeGenerator extends VisitorAdaptor {
 	}
 	
 	public void visit(Decrement dec) {
-//		if(dec.getDesignator().obj.getKind() == Obj.Elem) {
-//			Code.put(Code.dup2);
-//		}
+		if(dec.getDesignator().obj.getKind() == Obj.Elem) {
+			Code.put(Code.dup2);
+		}
 		Code.load(dec.getDesignator().obj);
 		Code.loadConst(1);
 		Code.put(Code.sub);
