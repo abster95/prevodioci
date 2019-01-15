@@ -1,34 +1,38 @@
 // generated with ast extension for cup
 // version 0.8
-// 15/0/2019 20:8:44
+// 15/0/2019 22:30:15
 
 
 package rs.ac.bg.etf.pp1.ast;
 
 public interface Visitor { 
 
-    public void visit(Designator Designator);
-    public void visit(Factor Factor);
     public void visit(Mulop Mulop);
-    public void visit(DesignatorStatement DesignatorStatement);
-    public void visit(ActualParamList ActualParamList);
-    public void visit(FactorList FactorList);
-    public void visit(Expr Expr);
-    public void visit(FormalParamList FormalParamList);
-    public void visit(Type Type);
-    public void visit(FormPars FormPars);
-    public void visit(VarDeclList VarDeclList);
-    public void visit(VarDecl VarDecl);
-    public void visit(EnumDeclList EnumDeclList);
-    public void visit(Addop Addop);
-    public void visit(FormalParamDecl FormalParamDecl);
-    public void visit(MethodDeclList MethodDeclList);
     public void visit(TermList TermList);
-    public void visit(Statement Statement);
-    public void visit(Enumerations Enumerations);
+    public void visit(FormalParamDecl FormalParamDecl);
     public void visit(StatementList StatementList);
-    public void visit(Enumeration Enumeration);
+    public void visit(FactorList FactorList);
+    public void visit(Addop Addop);
+    public void visit(Factor Factor);
+    public void visit(VarDeclCommaList VarDeclCommaList);
+    public void visit(Designator Designator);
+    public void visit(Value Value);
+    public void visit(ActualParamList ActualParamList);
+    public void visit(Enumerations Enumerations);
+    public void visit(Declarations Declarations);
+    public void visit(VarDeclList VarDeclList);
+    public void visit(FormalParamList FormalParamList);
+    public void visit(Expr Expr);
+    public void visit(VarDeclListList VarDeclListList);
+    public void visit(DeclarationsList DeclarationsList);
+    public void visit(DesignatorStatement DesignatorStatement);
     public void visit(ActualPars ActualPars);
+    public void visit(Statement Statement);
+    public void visit(VarDecl VarDecl);
+    public void visit(Type Type);
+    public void visit(MethodDeclList MethodDeclList);
+    public void visit(FormPars FormPars);
+    public void visit(Enumeration Enumeration);
     public void visit(MulopMod MulopMod);
     public void visit(MulopDiv MulopDiv);
     public void visit(MulopMul MulopMul);
@@ -75,8 +79,6 @@ public interface Visitor {
     public void visit(MultipleEnums MultipleEnums);
     public void visit(EnumName EnumName);
     public void visit(EnumDecl EnumDecl);
-    public void visit(NoEnumDeclaration NoEnumDeclaration);
-    public void visit(EnumDeclarations EnumDeclarations);
     public void visit(SingleFormalParamDecl SingleFormalParamDecl);
     public void visit(FormalParamDecls FormalParamDecls);
     public void visit(NoFormParam NoFormParam);
@@ -87,10 +89,22 @@ public interface Visitor {
     public void visit(MethodDeclarations MethodDeclarations);
     public void visit(VoidType VoidType);
     public void visit(ExistingType ExistingType);
-    public void visit(VarArrayDecl VarArrayDecl);
-    public void visit(VarSimpleDecl VarSimpleDecl);
-    public void visit(NoVarDecl NoVarDecl);
+    public void visit(VarDeclId VarDeclId);
+    public void visit(VarDeclIdArray VarDeclIdArray);
+    public void visit(SingleVarDecl SingleVarDecl);
+    public void visit(VarDecls VarDecls);
+    public void visit(VarDeclListError VarDeclListError);
+    public void visit(VarDeclListOK VarDeclListOK);
+    public void visit(NoVarDeclarations NoVarDeclarations);
     public void visit(VarDeclarations VarDeclarations);
+    public void visit(CharValue CharValue);
+    public void visit(IntegerValue IntegerValue);
+    public void visit(ConstDecl ConstDecl);
+    public void visit(DeclarationsConst DeclarationsConst);
+    public void visit(DeclarationsEnum DeclarationsEnum);
+    public void visit(DeclarationsVar DeclarationsVar);
+    public void visit(NoDeclarations NoDeclarations);
+    public void visit(MultipleDeclarations MultipleDeclarations);
     public void visit(ProgName ProgName);
     public void visit(Program Program);
 

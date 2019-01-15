@@ -87,26 +87,52 @@ nonterminal ActualPars ActualPars;
 nonterminal ActualParamList ActualParamList;
 
 nonterminal DesignatorStatement DesignatorStatement;
-nonterminal EnumDeclList EnumDeclList;
+nonterminal Declarations Declarations;
+nonterminal DeclarationsList DeclarationsList;
+nonterminal Value Value;
+nonterminal VarDeclListList VarDeclListList;
+nonterminal VarDeclCommaList VarDeclCommaList;
 
 
 nonterminal rs.etf.pp1.symboltable.concepts.Obj ProgName, Program, MethodDecl, MethodTypeName, Designator, ArrayName;
 nonterminal rs.etf.pp1.symboltable.concepts.Obj EnumDecl, EnumName, Enumerations, Enumeration;
+nonterminal rs.etf.pp1.symboltable.concepts.Obj ConstDecl;
 nonterminal rs.etf.pp1.symboltable.concepts.Struct Type, Term, Factor, Expr, TermList, FactorList;
 
 
-Program ::= (Program) PROG ProgName:p VarDeclList:V1 EnumDeclList:E2 LBRACE MethodDeclList:M3 RBRACE {: RESULT=new Program(p, V1, E2, M3); RESULT.setLine(pleft); :};
+Program ::= (Program) PROG ProgName:p DeclarationsList:D1 LBRACE MethodDeclList:M2 RBRACE {: RESULT=new Program(p, D1, M2); RESULT.setLine(pleft); :};
 
 ProgName ::= (ProgName) IDENT:progName {: RESULT=new ProgName(progName); RESULT.setLine(progNameleft); :};
 
-VarDeclList ::= (VarDeclarations) VarDeclList:V1 VarDecl:V2 {: RESULT=new VarDeclarations(V1, V2); RESULT.setLine(V1left); :}
-			|
-			(NoVarDecl) {: RESULT=new NoVarDecl(); :} /* epsilon */
-			;
+DeclarationsList ::= (MultipleDeclarations) DeclarationsList:D1 Declarations:D2 {: RESULT=new MultipleDeclarations(D1, D2); RESULT.setLine(D1left); :}
+					|
+					(NoDeclarations) {: RESULT=new NoDeclarations(); :} /* epsilon */
+					;
 
-VarDecl ::= (VarSimpleDecl) Type:varType IDENT:varName SEMI {: RESULT=new VarSimpleDecl(varType, varName); RESULT.setLine(varTypeleft); :}
-			|
-			(VarArrayDecl) Type:varType IDENT:varName LBRACKET RBRACKET SEMI {: RESULT=new VarArrayDecl(varType, varName); RESULT.setLine(varTypeleft); :};
+Declarations ::= (DeclarationsVar) VarDeclList:V1 {: RESULT=new DeclarationsVar(V1); RESULT.setLine(V1left); :}
+				| 
+				(DeclarationsEnum) EnumDecl:E1 {: RESULT=new DeclarationsEnum(E1); RESULT.setLine(E1left); :}
+				|
+				(DeclarationsConst) ConstDecl:C1 {: RESULT=new DeclarationsConst(C1); RESULT.setLine(C1left); :}
+				; 
+
+
+ConstDecl ::= (ConstDecl) CONST Type:varType IDENT:varName EQUAL Value:constVal SEMI {: RESULT=new ConstDecl(varType, varName, constVal); RESULT.setLine(varTypeleft); :};
+
+Value ::= (IntegerValue) NUMBER:N1 {: RESULT=new IntegerValue(N1); RESULT.setLine(N1left); :} | (CharValue) CHAR:C1 {: RESULT=new CharValue(C1); RESULT.setLine(C1left); :} ;
+
+VarDeclListList ::= (VarDeclarations) VarDeclListList:V1 VarDeclList:V2 {: RESULT=new VarDeclarations(V1, V2); RESULT.setLine(V1left); :} | (NoVarDeclarations) {: RESULT=new NoVarDeclarations(); :} /*epsilon*/ ; 
+
+VarDeclList ::= (VarDeclListOK) Type:T1 VarDeclCommaList:V2 SEMI {: RESULT=new VarDeclListOK(T1, V2); RESULT.setLine(T1left); :} 
+				| (VarDeclListError) error SEMI:si
+				{: 
+					parser.log.debug("Uspesan oporavak od greske na liniji "+ sileft );
+				:} {: RESULT=new VarDeclListError(); :}
+				;
+
+VarDeclCommaList ::= (VarDecls) VarDeclCommaList:V1 COMMA VarDecl:V2 {: RESULT=new VarDecls(V1, V2); RESULT.setLine(V1left); :} | (SingleVarDecl) VarDecl:V1 {: RESULT=new SingleVarDecl(V1); RESULT.setLine(V1left); :} ;
+
+VarDecl ::= (VarDeclIdArray) IDENT:varIdd LBRACKET RBRACKET {: RESULT=new VarDeclIdArray(varIdd); RESULT.setLine(varIddleft); :} | (VarDeclId) IDENT:varId {: RESULT=new VarDeclId(varId); RESULT.setLine(varIdleft); :} ;
 
 Type ::= (ExistingType) IDENT:typeName {: RESULT=new ExistingType(typeName); RESULT.setLine(typeNameleft); :}
 		|
@@ -117,7 +143,7 @@ MethodDeclList ::= (MethodDeclarations) MethodDeclList:M1 MethodDecl:M2 {: RESUL
 				(NoMethodDecl) {: RESULT=new NoMethodDecl(); :} /* epsilon */
 				;
 				
-MethodDecl ::= (MethodDecl) MethodTypeName:M1 LPAREN FormPars:F2 RPAREN VarDeclList:V3 LBRACE StatementList:S4 RBRACE {: RESULT=new MethodDecl(M1, F2, V3, S4); RESULT.setLine(M1left); :};
+MethodDecl ::= (MethodDecl) MethodTypeName:M1 LPAREN FormPars:F2 RPAREN VarDeclListList:V3 LBRACE StatementList:S4 RBRACE {: RESULT=new MethodDecl(M1, F2, V3, S4); RESULT.setLine(M1left); :};
 
 MethodTypeName ::= (MethodTypeName) Type:retType IDENT:methName {: RESULT=new MethodTypeName(retType, methName); RESULT.setLine(retTypeleft); :};
 
@@ -131,10 +157,6 @@ FormalParamList ::= (FormalParamDecls) FormalParamList:F1 COMMA FormalParamDecl:
 				(SingleFormalParamDecl) FormalParamDecl:F1 {: RESULT=new SingleFormalParamDecl(F1); RESULT.setLine(F1left); :}
 				;
 
-EnumDeclList ::= (EnumDeclarations) EnumDeclList:E1 EnumDecl:E2 {: RESULT=new EnumDeclarations(E1, E2); RESULT.setLine(E1left); :}
-					|
-					(NoEnumDeclaration) {: RESULT=new NoEnumDeclaration(); :} /* epsilon */
-					;
 
 EnumDecl ::= (EnumDecl)  EnumName:E1 LBRACE Enumerations:E2 RBRACE {: RESULT=new EnumDecl(E1, E2); RESULT.setLine(E1left); :};
 

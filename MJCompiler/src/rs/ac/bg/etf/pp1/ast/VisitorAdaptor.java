@@ -1,34 +1,38 @@
 // generated with ast extension for cup
 // version 0.8
-// 15/0/2019 20:8:44
+// 15/0/2019 22:30:15
 
 
 package rs.ac.bg.etf.pp1.ast;
 
 public abstract class VisitorAdaptor implements Visitor { 
 
-    public void visit(Designator Designator) { }
-    public void visit(Factor Factor) { }
     public void visit(Mulop Mulop) { }
-    public void visit(DesignatorStatement DesignatorStatement) { }
-    public void visit(ActualParamList ActualParamList) { }
-    public void visit(FactorList FactorList) { }
-    public void visit(Expr Expr) { }
-    public void visit(FormalParamList FormalParamList) { }
-    public void visit(Type Type) { }
-    public void visit(FormPars FormPars) { }
-    public void visit(VarDeclList VarDeclList) { }
-    public void visit(VarDecl VarDecl) { }
-    public void visit(EnumDeclList EnumDeclList) { }
-    public void visit(Addop Addop) { }
-    public void visit(FormalParamDecl FormalParamDecl) { }
-    public void visit(MethodDeclList MethodDeclList) { }
     public void visit(TermList TermList) { }
-    public void visit(Statement Statement) { }
-    public void visit(Enumerations Enumerations) { }
+    public void visit(FormalParamDecl FormalParamDecl) { }
     public void visit(StatementList StatementList) { }
-    public void visit(Enumeration Enumeration) { }
+    public void visit(FactorList FactorList) { }
+    public void visit(Addop Addop) { }
+    public void visit(Factor Factor) { }
+    public void visit(VarDeclCommaList VarDeclCommaList) { }
+    public void visit(Designator Designator) { }
+    public void visit(Value Value) { }
+    public void visit(ActualParamList ActualParamList) { }
+    public void visit(Enumerations Enumerations) { }
+    public void visit(Declarations Declarations) { }
+    public void visit(VarDeclList VarDeclList) { }
+    public void visit(FormalParamList FormalParamList) { }
+    public void visit(Expr Expr) { }
+    public void visit(VarDeclListList VarDeclListList) { }
+    public void visit(DeclarationsList DeclarationsList) { }
+    public void visit(DesignatorStatement DesignatorStatement) { }
     public void visit(ActualPars ActualPars) { }
+    public void visit(Statement Statement) { }
+    public void visit(VarDecl VarDecl) { }
+    public void visit(Type Type) { }
+    public void visit(MethodDeclList MethodDeclList) { }
+    public void visit(FormPars FormPars) { }
+    public void visit(Enumeration Enumeration) { }
     public void visit(MulopMod MulopMod) { visit(); }
     public void visit(MulopDiv MulopDiv) { visit(); }
     public void visit(MulopMul MulopMul) { visit(); }
@@ -75,8 +79,6 @@ public abstract class VisitorAdaptor implements Visitor {
     public void visit(MultipleEnums MultipleEnums) { visit(); }
     public void visit(EnumName EnumName) { visit(); }
     public void visit(EnumDecl EnumDecl) { visit(); }
-    public void visit(NoEnumDeclaration NoEnumDeclaration) { visit(); }
-    public void visit(EnumDeclarations EnumDeclarations) { visit(); }
     public void visit(SingleFormalParamDecl SingleFormalParamDecl) { visit(); }
     public void visit(FormalParamDecls FormalParamDecls) { visit(); }
     public void visit(NoFormParam NoFormParam) { visit(); }
@@ -87,10 +89,22 @@ public abstract class VisitorAdaptor implements Visitor {
     public void visit(MethodDeclarations MethodDeclarations) { visit(); }
     public void visit(VoidType VoidType) { visit(); }
     public void visit(ExistingType ExistingType) { visit(); }
-    public void visit(VarArrayDecl VarArrayDecl) { visit(); }
-    public void visit(VarSimpleDecl VarSimpleDecl) { visit(); }
-    public void visit(NoVarDecl NoVarDecl) { visit(); }
+    public void visit(VarDeclId VarDeclId) { visit(); }
+    public void visit(VarDeclIdArray VarDeclIdArray) { visit(); }
+    public void visit(SingleVarDecl SingleVarDecl) { visit(); }
+    public void visit(VarDecls VarDecls) { visit(); }
+    public void visit(VarDeclListError VarDeclListError) { visit(); }
+    public void visit(VarDeclListOK VarDeclListOK) { visit(); }
+    public void visit(NoVarDeclarations NoVarDeclarations) { visit(); }
     public void visit(VarDeclarations VarDeclarations) { visit(); }
+    public void visit(CharValue CharValue) { visit(); }
+    public void visit(IntegerValue IntegerValue) { visit(); }
+    public void visit(ConstDecl ConstDecl) { visit(); }
+    public void visit(DeclarationsConst DeclarationsConst) { visit(); }
+    public void visit(DeclarationsEnum DeclarationsEnum) { visit(); }
+    public void visit(DeclarationsVar DeclarationsVar) { visit(); }
+    public void visit(NoDeclarations NoDeclarations) { visit(); }
+    public void visit(MultipleDeclarations MultipleDeclarations) { visit(); }
     public void visit(ProgName ProgName) { visit(); }
     public void visit(Program Program) { visit(); }
 

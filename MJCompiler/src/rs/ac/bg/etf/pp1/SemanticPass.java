@@ -17,6 +17,7 @@ public class SemanticPass extends VisitorAdaptor {
 	boolean returnFound = false;
 	boolean errorDetected = false;
 	int nVars;
+	Struct currentType = Tab.noType;
 
 	Logger log = Logger.getLogger(getClass());
 
@@ -39,41 +40,66 @@ public class SemanticPass extends VisitorAdaptor {
 
 	// VARIABLES
 
-	public void visit(VarSimpleDecl varDecl) {
-		Obj existing = Tab.currentScope.findSymbol(varDecl.getVarName());
+	public void visit(VarDeclId varDecl) {
+		Obj existing = Tab.currentScope.findSymbol(varDecl.getVarId());
 		if (null != existing && existing != Tab.noObj) {
-			report_error("ERROR: Variable with name '" + varDecl.getVarName() + "' already declared in current scope!",
+			report_error("ERROR: Variable with name '" + varDecl.getVarId() + "' already declared in current scope!",
 					varDecl);
 			return;
 		}
-		if (Tab.noType == varDecl.getType().struct) {
+		if (Tab.noType == currentType) {
 			report_error("ERROR: It seems like you're trying to declare a variable of type 'void' for variable '"
-					+ varDecl.getVarName() + "'. Allowed  types for variables are 'int' and 'char'.", varDecl);
+					+ varDecl.getVarId() + "'. Allowed  types for variables are 'int' and 'char'.", varDecl);
 			return;
 		}
 		varDeclCount++;
-		report_info("Variable declaration: " + varDecl.getVarName(), varDecl);
-		if(varDecl.getType().struct.getKind() == Struct.Enum) {
-			Tab.insert(Obj.Var, varDecl.getVarName(), Tab.intType);
+		report_info("Variable declaration: " + varDecl.getVarId(), varDecl);
+		if(currentType.getKind() == Struct.Enum) {
+			Tab.insert(Obj.Var, varDecl.getVarId(), Tab.intType);
 		}
-		Obj varNode = Tab.insert(Obj.Var, varDecl.getVarName(), varDecl.getType().struct);
+		Obj varNode = Tab.insert(Obj.Var, varDecl.getVarId(), currentType);
 	}
 
-	public void visit(VarArrayDecl varDecl) {
-		Obj existing = Tab.currentScope.findSymbol(varDecl.getVarName());
+	public void visit(VarDeclIdArray varDecl) {
+		Obj existing = Tab.currentScope.findSymbol(varDecl.getVarIdd());
 		if (null != existing && existing != Tab.noObj) {
-			report_error("ERROR: Variable with name '" + varDecl.getVarName() + "' already declared in current scope!",
+			report_error("ERROR: Variable with name '" + varDecl.getVarIdd() + "' already declared in current scope!",
 					varDecl);
 			return;
 		}
-		if (Tab.noType == varDecl.getType().struct) {
+		if (Tab.noType == currentType) {
 			report_error("ERROR: It seems like you're trying to declare an array of type 'void' for variable '"
-					+ varDecl.getVarName() + "'. Allowed  types for arrays are 'int' and 'char'.", varDecl);
+					+ varDecl.getVarIdd() + "'. Allowed  types for arrays are 'int' and 'char'.", varDecl);
 			return;
 		}
 		varDeclCount++;
-		report_info("Variable declaration: " + varDecl.getVarName(), varDecl);
-		Tab.insert(Obj.Var, varDecl.getVarName(), new Struct(Struct.Array, varDecl.getType().struct));
+		report_info("Variable declaration: " + varDecl.getVarIdd(), varDecl);
+		Tab.insert(Obj.Var, varDecl.getVarIdd(), new Struct(Struct.Array, currentType));
+	}
+	
+	public void visit(ConstDecl constDecl) {
+		Obj existing = Tab.currentScope.findSymbol(constDecl.getVarName());
+		if (null != existing && existing != Tab.noObj) {
+			report_error("ERROR: Variable with name '" + constDecl.getVarName() + "' already declared in current scope!",
+					constDecl);
+			return;
+		}
+		if (Tab.noType == constDecl.getType().struct) {
+			report_error("ERROR: It seems like you're trying to declare a const of type 'void' for variable '"
+					+ constDecl.getVarName() + "'. Allowed  types for consts are 'int' and 'char'.", constDecl);
+			return;
+		}
+		varDeclCount++;
+		report_info("Const declaration: " + constDecl.getVarName(), constDecl);
+		constDecl.obj = Tab.insert(Obj.Con, constDecl.getVarName(), constDecl.getType().struct);
+		Value val = constDecl.getValue();
+		if(val.getClass() == IntegerValue.class) {
+			IntegerValue intVal = (IntegerValue) val;
+			constDecl.obj.setAdr(intVal.getN1());
+		} else {
+			CharValue charVal = (CharValue) val;
+			constDecl.obj.setAdr(charVal.getC1().BYTES);
+		}
 	}
 
 	public void visit(PrintStmt print) {
@@ -125,10 +151,12 @@ public class SemanticPass extends VisitorAdaptor {
 				type.struct = Tab.noType;
 			}
 		}
+		currentType = type.struct;
 	}
 
 	public void visit(VoidType type) {
 		type.struct = Tab.noType;
+		currentType = type.struct;
 	}
 
 	// METHODS

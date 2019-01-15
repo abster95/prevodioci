@@ -1,6 +1,6 @@
 // generated with ast extension for cup
 // version 0.8
-// 15/0/2019 20:8:44
+// 15/0/2019 22:30:15
 
 
 package rs.ac.bg.etf.pp1.ast;
@@ -12,17 +12,14 @@ public class Program implements SyntaxNode {
     public rs.etf.pp1.symboltable.concepts.Obj obj = null;
 
     private ProgName ProgName;
-    private VarDeclList VarDeclList;
-    private EnumDeclList EnumDeclList;
+    private DeclarationsList DeclarationsList;
     private MethodDeclList MethodDeclList;
 
-    public Program (ProgName ProgName, VarDeclList VarDeclList, EnumDeclList EnumDeclList, MethodDeclList MethodDeclList) {
+    public Program (ProgName ProgName, DeclarationsList DeclarationsList, MethodDeclList MethodDeclList) {
         this.ProgName=ProgName;
         if(ProgName!=null) ProgName.setParent(this);
-        this.VarDeclList=VarDeclList;
-        if(VarDeclList!=null) VarDeclList.setParent(this);
-        this.EnumDeclList=EnumDeclList;
-        if(EnumDeclList!=null) EnumDeclList.setParent(this);
+        this.DeclarationsList=DeclarationsList;
+        if(DeclarationsList!=null) DeclarationsList.setParent(this);
         this.MethodDeclList=MethodDeclList;
         if(MethodDeclList!=null) MethodDeclList.setParent(this);
     }
@@ -35,20 +32,12 @@ public class Program implements SyntaxNode {
         this.ProgName=ProgName;
     }
 
-    public VarDeclList getVarDeclList() {
-        return VarDeclList;
+    public DeclarationsList getDeclarationsList() {
+        return DeclarationsList;
     }
 
-    public void setVarDeclList(VarDeclList VarDeclList) {
-        this.VarDeclList=VarDeclList;
-    }
-
-    public EnumDeclList getEnumDeclList() {
-        return EnumDeclList;
-    }
-
-    public void setEnumDeclList(EnumDeclList EnumDeclList) {
-        this.EnumDeclList=EnumDeclList;
+    public void setDeclarationsList(DeclarationsList DeclarationsList) {
+        this.DeclarationsList=DeclarationsList;
     }
 
     public MethodDeclList getMethodDeclList() {
@@ -81,23 +70,20 @@ public class Program implements SyntaxNode {
 
     public void childrenAccept(Visitor visitor) {
         if(ProgName!=null) ProgName.accept(visitor);
-        if(VarDeclList!=null) VarDeclList.accept(visitor);
-        if(EnumDeclList!=null) EnumDeclList.accept(visitor);
+        if(DeclarationsList!=null) DeclarationsList.accept(visitor);
         if(MethodDeclList!=null) MethodDeclList.accept(visitor);
     }
 
     public void traverseTopDown(Visitor visitor) {
         accept(visitor);
         if(ProgName!=null) ProgName.traverseTopDown(visitor);
-        if(VarDeclList!=null) VarDeclList.traverseTopDown(visitor);
-        if(EnumDeclList!=null) EnumDeclList.traverseTopDown(visitor);
+        if(DeclarationsList!=null) DeclarationsList.traverseTopDown(visitor);
         if(MethodDeclList!=null) MethodDeclList.traverseTopDown(visitor);
     }
 
     public void traverseBottomUp(Visitor visitor) {
         if(ProgName!=null) ProgName.traverseBottomUp(visitor);
-        if(VarDeclList!=null) VarDeclList.traverseBottomUp(visitor);
-        if(EnumDeclList!=null) EnumDeclList.traverseBottomUp(visitor);
+        if(DeclarationsList!=null) DeclarationsList.traverseBottomUp(visitor);
         if(MethodDeclList!=null) MethodDeclList.traverseBottomUp(visitor);
         accept(visitor);
     }
@@ -113,14 +99,8 @@ public class Program implements SyntaxNode {
             buffer.append(tab+"  null");
         buffer.append("\n");
 
-        if(VarDeclList!=null)
-            buffer.append(VarDeclList.toString("  "+tab));
-        else
-            buffer.append(tab+"  null");
-        buffer.append("\n");
-
-        if(EnumDeclList!=null)
-            buffer.append(EnumDeclList.toString("  "+tab));
+        if(DeclarationsList!=null)
+            buffer.append(DeclarationsList.toString("  "+tab));
         else
             buffer.append(tab+"  null");
         buffer.append("\n");

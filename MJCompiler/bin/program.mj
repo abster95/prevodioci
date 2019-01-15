@@ -1,7 +1,8 @@
 program MJProgram
-	int x; int y;
-	char charArray[];
+	int x, y;
 	enum AbiBabi {JEBANJE, TRPANJE, ZABIJANJE, U_GUZU=11, ZNAS}
+	char charArray[];
+	const int cnst = 1111;	
 {
 
 	int main() int intArray[]; int result; AbiBabi b;{

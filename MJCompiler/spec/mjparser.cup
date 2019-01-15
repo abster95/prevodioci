@@ -78,26 +78,48 @@ nonterminal FormPars, StatementList, FormalParamList, FormalParamDecl, Statement
 nonterminal Addop, Mulop, ActualPars, ActualParamList;
 
 nonterminal DesignatorStatement;
-nonterminal EnumDeclList;
+nonterminal Declarations, DeclarationsList, Value, VarDeclListList, VarDeclCommaList;
 
 
 nonterminal rs.etf.pp1.symboltable.concepts.Obj ProgName, Program, MethodDecl, MethodTypeName, Designator, ArrayName;
 nonterminal rs.etf.pp1.symboltable.concepts.Obj EnumDecl, EnumName, Enumerations, Enumeration;
+nonterminal rs.etf.pp1.symboltable.concepts.Obj ConstDecl;
 nonterminal rs.etf.pp1.symboltable.concepts.Struct Type, Term, Factor, Expr, TermList, FactorList;
 
 
-Program ::= (Program) PROG ProgName:p VarDeclList EnumDeclList LBRACE MethodDeclList RBRACE;
+Program ::= (Program) PROG ProgName:p DeclarationsList LBRACE MethodDeclList RBRACE;
 
 ProgName ::= (ProgName) IDENT:progName;
 
-VarDeclList ::= (VarDeclarations) VarDeclList VarDecl
-			|
-			(NoVarDecl) /* epsilon */
-			;
+DeclarationsList ::= (MultipleDeclarations) DeclarationsList Declarations
+					|
+					(NoDeclarations) /* epsilon */
+					;
 
-VarDecl ::= (VarSimpleDecl) Type:varType IDENT:varName SEMI
-			|
-			(VarArrayDecl) Type:varType IDENT:varName LBRACKET RBRACKET SEMI;
+Declarations ::= (DeclarationsVar) VarDeclList
+				| 
+				(DeclarationsEnum) EnumDecl
+				|
+				(DeclarationsConst) ConstDecl
+				; 
+
+
+ConstDecl ::= (ConstDecl) CONST Type:varType IDENT:varName EQUAL Value:constVal SEMI;
+
+Value ::= (IntegerValue) NUMBER | (CharValue) CHAR ;
+
+VarDeclListList ::= (VarDeclarations) VarDeclListList VarDeclList | (NoVarDeclarations) /*epsilon*/ ; 
+
+VarDeclList ::= (VarDeclListOK) Type VarDeclCommaList SEMI 
+				| (VarDeclListError) error SEMI:si
+				{: 
+					parser.log.debug("Uspesan oporavak od greske na liniji "+ sileft );
+				:}
+				;
+
+VarDeclCommaList ::= (VarDecls) VarDeclCommaList COMMA VarDecl | (SingleVarDecl) VarDecl ;
+
+VarDecl ::= (VarDeclIdArray) IDENT:varIdd LBRACKET RBRACKET | (VarDeclId) IDENT:varId ;
 
 Type ::= (ExistingType) IDENT:typeName
 		|
@@ -108,7 +130,7 @@ MethodDeclList ::= (MethodDeclarations) MethodDeclList MethodDecl
 				(NoMethodDecl) /* epsilon */
 				;
 				
-MethodDecl ::= (MethodDecl) MethodTypeName LPAREN FormPars RPAREN VarDeclList LBRACE StatementList RBRACE;
+MethodDecl ::= (MethodDecl) MethodTypeName LPAREN FormPars RPAREN VarDeclListList LBRACE StatementList RBRACE;
 
 MethodTypeName ::= (MethodTypeName) Type:retType IDENT:methName;
 
@@ -122,10 +144,6 @@ FormalParamList ::= (FormalParamDecls) FormalParamList COMMA FormalParamDecl
 				(SingleFormalParamDecl) FormalParamDecl
 				;
 
-EnumDeclList ::= (EnumDeclarations) EnumDeclList EnumDecl
-					|
-					(NoEnumDeclaration) /* epsilon */
-					;
 
 EnumDecl ::= (EnumDecl)  EnumName LBRACE Enumerations RBRACE;
 
