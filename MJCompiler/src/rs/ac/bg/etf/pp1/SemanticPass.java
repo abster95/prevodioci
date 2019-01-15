@@ -388,7 +388,7 @@ public class SemanticPass extends VisitorAdaptor {
 		if (designator.getClass() == NamedDesignator.class) {
 			NamedDesignator namedDesignator = (NamedDesignator) designator;
 			Obj varObj = namedDesignator.obj;
-			if (Obj.Var != varObj.getKind()) {
+			if (Obj.Var != varObj.getKind() && Obj.Con != varObj.getKind()) {
 				report_error("ERROR: Name '" + namedDesignator.getName()
 						+ "' used as a variable, but it's not of that kind.", designatorFactor);
 				designatorFactor.struct = Tab.noType;
