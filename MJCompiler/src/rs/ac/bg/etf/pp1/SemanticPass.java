@@ -243,7 +243,7 @@ public class SemanticPass extends VisitorAdaptor {
 		}
 		enumDefault.obj = Tab.insert(Obj.Con, enumDefault.getId(), Tab.intType);
 		enumDefault.obj.setAdr(enumDefault.getVal());
-		lastEnumValue = enumDefault.getVal();
+		lastEnumValue = enumDefault.getVal() + 1;
 		boolean success = currentEnum.getType().getMembersTable().insertKey(enumDefault.obj);
 		if (!success) {
 			report_error("Name conflict: there's an enumeration with the same name", enumDefault);
