@@ -40,8 +40,8 @@ public class SemanticPass extends VisitorAdaptor {
 	// VARIABLES
 
 	public void visit(VarSimpleDecl varDecl) {
-		Obj existing = Tab.find(varDecl.getVarName());
-		if (existing != Tab.noObj) {
+		Obj existing = Tab.currentScope.findSymbol(varDecl.getVarName());
+		if (null != existing && existing != Tab.noObj) {
 			report_error("ERROR: Variable with name '" + varDecl.getVarName() + "' already declared in current scope!",
 					varDecl);
 			return;
@@ -53,12 +53,15 @@ public class SemanticPass extends VisitorAdaptor {
 		}
 		varDeclCount++;
 		report_info("Variable declaration: " + varDecl.getVarName(), varDecl);
+		if(varDecl.getType().struct.getKind() == Struct.Enum) {
+			Tab.insert(Obj.Var, varDecl.getVarName(), Tab.intType);
+		}
 		Obj varNode = Tab.insert(Obj.Var, varDecl.getVarName(), varDecl.getType().struct);
 	}
 
 	public void visit(VarArrayDecl varDecl) {
-		Obj existing = Tab.find(varDecl.getVarName());
-		if (existing != Tab.noObj) {
+		Obj existing = Tab.currentScope.findSymbol(varDecl.getVarName());
+		if (null != existing && existing != Tab.noObj) {
 			report_error("ERROR: Variable with name '" + varDecl.getVarName() + "' already declared in current scope!",
 					varDecl);
 			return;
@@ -192,6 +195,7 @@ public class SemanticPass extends VisitorAdaptor {
 		if (null == constantObj || Tab.noObj == constantObj) {
 			report_error("ERROR: Constant '" + accessField.getField() + "' is not part of '"
 					+ accessField.getVarName() + "' enumeration!", accessField);
+			constantObj = Tab.noObj;
 		}
 		accessField.obj = constantObj;
 	}

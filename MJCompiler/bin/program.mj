@@ -1,27 +1,12 @@
 program MJProgram
 	int x; int y;
-	char[] charArray;
+	char charArray[];
 	enum AbiBabi {JEBANJE, TRPANJE, ZABIJANJE, U_GUZU=11}
 {
-	int alwaysNumber5() {
-		return 5;
-	}	
-	
-	void old() int[] intArray; int result; {
-		y = 2 + 3;
-		
-		x = y*2;
-		x++;
-		print(-x + alwaysNumber5());
-		intArray = new int[20];
-		intArray[3]++;
-		print(intArray[3]);
-		print('a');
-		print(y, 10);
-	}
 
-	int main() int[] intArray; int result; {
-		
+	int main() int intArray[]; int result; AbiBabi b;{
+		b = AbiBabi.U_GUZU;
+		print(b);
 		intArray = new int[20];
 		intArray[0]++;
 		intArray[1]--;

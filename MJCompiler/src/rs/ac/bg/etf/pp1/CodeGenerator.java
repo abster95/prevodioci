@@ -99,11 +99,7 @@ public class CodeGenerator extends VisitorAdaptor {
 	
 	public void visit(DesignatorFactor designatorFactor) {
 		Designator designator = designatorFactor.getDesignator();
-		if(designator.getClass() == NamedDesignator.class) {
-			Code.load(designator.obj);
-		} else if(designator.getClass() == AccessArray.class) {
-			Code.load(designator.obj);
-		}
+		Code.load(designator.obj);
 		
 	}
 	
