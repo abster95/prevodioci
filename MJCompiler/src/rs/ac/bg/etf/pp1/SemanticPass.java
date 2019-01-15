@@ -183,17 +183,17 @@ public class SemanticPass extends VisitorAdaptor {
 			report_error("ERROR: Using undeclared enumeration '" + accessField.getVarName() + "'",
 					accessField);
 		}
-		if (EnumObj != enumObj.getKind()) {
+		if (Obj.Type != enumObj.getKind()) {
 			report_error(
 					"ERROR: Name '" + accessField.getVarName() + "' used as an enum, but it's not of that kind.",
 					accessField);
 		}
-		Obj constantObj = Tab.find(accessField.getField());
+		Obj constantObj = enumObj.getType().getMembersTable().searchKey(accessField.getField());
 		if (null == constantObj || Tab.noObj == constantObj) {
 			report_error("ERROR: Constant '" + accessField.getField() + "' is not part of '"
 					+ accessField.getVarName() + "' enumeration!", accessField);
 		}
-		accessField.obj = enumObj;
+		accessField.obj = constantObj;
 	}
 	
 	public void visit(ArrayName arrayName) {
@@ -217,7 +217,7 @@ public class SemanticPass extends VisitorAdaptor {
 	}
 
 	public void visit(EnumName enumName) {
-		currentEnum = Tab.insert(EnumObj, enumName.getEnumName(), new Struct(Struct.Enum));
+		currentEnum = Tab.insert(Obj.Type, enumName.getEnumName(), new Struct(Struct.Enum));
 		lastEnumValue = 0;
 	}
 

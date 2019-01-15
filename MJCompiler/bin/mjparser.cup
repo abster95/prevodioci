@@ -97,7 +97,7 @@ VarDeclList ::= (VarDeclarations) VarDeclList VarDecl
 
 VarDecl ::= (VarSimpleDecl) Type:varType IDENT:varName SEMI
 			|
-			(VarArrayDecl) Type:varType LBRACKET RBRACKET IDENT:varName SEMI;
+			(VarArrayDecl) Type:varType IDENT:varName LBRACKET RBRACKET SEMI;
 
 Type ::= (ExistingType) IDENT:typeName
 		|

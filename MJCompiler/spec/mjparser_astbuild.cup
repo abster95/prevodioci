@@ -106,7 +106,7 @@ VarDeclList ::= (VarDeclarations) VarDeclList:V1 VarDecl:V2 {: RESULT=new VarDec
 
 VarDecl ::= (VarSimpleDecl) Type:varType IDENT:varName SEMI {: RESULT=new VarSimpleDecl(varType, varName); RESULT.setLine(varTypeleft); :}
 			|
-			(VarArrayDecl) Type:varType LBRACKET RBRACKET IDENT:varName SEMI {: RESULT=new VarArrayDecl(varType, varName); RESULT.setLine(varTypeleft); :};
+			(VarArrayDecl) Type:varType IDENT:varName LBRACKET RBRACKET SEMI {: RESULT=new VarArrayDecl(varType, varName); RESULT.setLine(varTypeleft); :};
 
 Type ::= (ExistingType) IDENT:typeName {: RESULT=new ExistingType(typeName); RESULT.setLine(typeNameleft); :}
 		|
