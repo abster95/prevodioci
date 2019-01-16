@@ -28,10 +28,17 @@ public class MJParserTest {
 	public static void main(String[] args) throws Exception {
 		
 		Logger log = Logger.getLogger(MJParserTest.class);
-		
+		if(args.length != 1) {
+			log.error("Please provide an input file");
+			return;
+		}		
 		Reader br = null;
 		try {
-			File sourceCode = new File("test/testA.mj");
+			File sourceCode = new File(args[0]);
+			if(!sourceCode.exists()) {
+				log.error("The file " + args[0] + " doesn't exist");
+				return;
+			}
 			log.info("Compiling source file: " + sourceCode.getAbsolutePath());
 			
 			br = new BufferedReader(new FileReader(sourceCode));
@@ -49,11 +56,7 @@ public class MJParserTest {
 			// ispis prepoznatih programskih konstrukcija
 			SemanticPass v = new SemanticPass();
 			prog.traverseBottomUp(v); 
-//	      
-//			log.info(" Print count calls = " + v.printCallCount);
-//
-//			log.info(" Deklarisanih promenljivih ima = " + v.varDeclCount);
-//			
+
 			log.info("===================================");
 			Tab.dump();
 			

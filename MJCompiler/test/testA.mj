@@ -46,7 +46,7 @@ program test301
 		print(bodovi);
 			
 			
-		//read(bodovi);
+		read(bodovi);
 		bodovi = bodovi + 1;
 		print(bodovi);
 			
